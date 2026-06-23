@@ -82,11 +82,11 @@ cross-cutting tooling listed below.
   ./vendor/bin/sail artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
   ./vendor/bin/sail artisan vendor:publish --provider="Spatie\MediaLibrary\MediaLibraryServiceProvider" --tag="medialibrary-migrations"
   ```
-- [ ] **i18n (Laravel Lang → JSON):** `./vendor/bin/sail artisan lang:add en it` then `./vendor/bin/sail artisan lang:update`, configured to output **JSON** files (`lang/en.json`, `lang/it.json`); set `APP_LOCALE`. App-specific strings added to the same JSON files.
-- [ ] **Front-end deps:** ensure **Axios** is installed (bundled with Breeze; add if missing) and create a configured instance at `resources/js/lib/axios.ts`; add **Prettier** + `prettier-plugin-tailwindcss`: `./vendor/bin/sail npm install -D prettier prettier-plugin-tailwindcss`.
-- [ ] **Code-style configs:** add `pint.json` (Laravel preset) and `.prettierrc` + `.prettierignore`; add `composer`/`npm` scripts: `pint`, `format`, `format:check`.
-- [ ] `./vendor/bin/sail artisan storage:link`; install/build front-end: `./vendor/bin/sail npm install`, `./vendor/bin/sail npm run dev`.
-- [ ] `./vendor/bin/sail artisan migrate` and verify the Breeze app + auth pages load at `http://localhost`.
+- [x] **i18n (Laravel Lang → JSON):** `./vendor/bin/sail artisan lang:add en it` then `./vendor/bin/sail artisan lang:update`, configured to output **JSON** files (`lang/en.json`, `lang/it.json`); set `APP_LOCALE`. App-specific strings added to the same JSON files.
+- [x] **Front-end deps:** ensure **Axios** is installed (bundled with Breeze; add if missing) and create a configured instance at `resources/js/lib/axios.ts`; add **Prettier** + `prettier-plugin-tailwindcss`: `./vendor/bin/sail npm install -D prettier prettier-plugin-tailwindcss`.
+- [x] **Code-style configs:** add `pint.json` (Laravel preset) and `.prettierrc` + `.prettierignore`; add `composer`/`npm` scripts: `pint`, `format`, `format:check`.
+- [x] `./vendor/bin/sail artisan storage:link`; install/build front-end: `./vendor/bin/sail npm install`, `./vendor/bin/sail npm run dev`.
+- [x] `./vendor/bin/sail artisan migrate` and verify the Breeze app + auth pages load at `http://localhost`.
 - **Tests (Phase 1):** Run the Breeze-provided suite — `./vendor/bin/sail artisan test` — confirming auth/registration/profile tests pass; confirm `./vendor/bin/sail pint --test` and Prettier check are clean on the fresh scaffold (baseline green before customizing).
 
 ---
