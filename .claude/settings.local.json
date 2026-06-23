@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(composer create-project *)",
+      "Bash(composer require *)",
+      "Bash(php artisan *)",
+      "Bash(find /Users/grazia/Desktop/ATOMICA/demo_tirocinio/inertia_blog -name \"docker-compose*\" -maxdepth 3 2>/dev/null && find /tmp/laravel_scaffold -name \"docker-compose*\" -maxdepth 3 2>/dev/null)",
+      "Read(//private/tmp/laravel_scaffold/**)"
+    ]
+  }
+}
