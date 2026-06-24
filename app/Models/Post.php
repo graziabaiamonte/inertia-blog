@@ -20,6 +20,8 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 #[Fillable(['user_id', 'category_id', 'title', 'slug', 'excerpt', 'body', 'status', 'published_at'])]
 /**
  * @method static \Illuminate\Database\Eloquent\Builder<static> published()
+ *
+ * @mixin IdeHelperPost
  */
 class Post extends Model implements HasMedia
 {

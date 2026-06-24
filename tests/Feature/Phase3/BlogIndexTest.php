@@ -12,6 +12,7 @@ beforeEach(function () {
 });
 
 it('lists only published posts on the blog index', function () {
+    /** @var TestCase $this */
     Post::factory()->published()->count(3)->create();
     Post::factory()->draft()->count(2)->create();
 
@@ -24,6 +25,7 @@ it('lists only published posts on the blog index', function () {
 });
 
 it('filters posts by category slug', function () {
+    /** @var TestCase $this */
     $category = Category::factory()->create(['slug' => 'laravel']);
     Post::factory()->published()->for($category)->count(2)->create();
     Post::factory()->published()->count(3)->create();
@@ -33,6 +35,7 @@ it('filters posts by category slug', function () {
 });
 
 it('filters posts by tag slug', function () {
+    /** @var TestCase $this */
     $tag = Tag::factory()->create(['slug' => 'php']);
     $tagged = Post::factory()->published()->count(2)->create();
     $tagged->each(fn (Post $post) => $post->tags()->attach($tag));
@@ -43,6 +46,7 @@ it('filters posts by tag slug', function () {
 });
 
 it('filters posts by search term', function () {
+    /** @var TestCase $this */
     Post::factory()->published()->create(['title' => 'Mastering Eloquent Relationships']);
     Post::factory()->published()->create(['title' => 'A totally unrelated topic']);
 
@@ -54,6 +58,7 @@ it('filters posts by search term', function () {
 });
 
 it('sorts posts by title when requested', function () {
+    /** @var TestCase $this */
     Post::factory()->published()->create(['title' => 'Zebra']);
     Post::factory()->published()->create(['title' => 'Alpha']);
 
@@ -65,6 +70,7 @@ it('sorts posts by title when requested', function () {
 });
 
 it('ignores disallowed sort and filter params', function () {
+    /** @var TestCase $this */
     Post::factory()->published()->count(2)->create();
 
     $this->get(route('blog.index', ['sort' => 'body', 'filter' => ['status' => 'draft']]))

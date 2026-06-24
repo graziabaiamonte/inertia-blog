@@ -145,19 +145,19 @@ cross-cutting tooling listed below.
 
 ### 3.2 Admin/author controllers (`app/Http/Controllers/Admin/`, auth-protected)
 
-- [ ] `PostController` resource (authors manage own, admins all; attaches images via medialibrary, uses `PostStatus`).
-- [ ] `CategoryController`, `TagController` resource CRUD (`manage taxonomy`). `CommentController` moderation (`moderate comments`). `MediaController@store` inline upload. (Optional) `UserController` (`manage users`).
+- [x] `PostController` resource (authors manage own, admins all; attaches images via medialibrary, uses `PostStatus`).
+- [x] `CategoryController`, `TagController` resource CRUD (`manage taxonomy`). `CommentController` moderation (`moderate comments`). `MediaController@store` inline upload. (Optional) `UserController` (`manage users`) — deferred (optional).
 
 ### 3.3 Support layers
 
-- [ ] **A custom Form Request per write action** (never inline): `StorePostRequest`, `UpdatePostRequest`, `StoreCommentRequest`, `StoreCategoryRequest`, `UpdateCategoryRequest`, `StoreTagRequest`, `UpdateTagRequest`, `StoreMediaRequest`, … Each `authorize()` performs the authorization — `$user->can(PermissionName::...->value)` plus inline **ownership** checks for own-post actions (`$post->user_id === $user->id || $user->can('manage all posts')`); rules use `Rule::enum(PostStatus::class)` for status and image mime/size rules for uploads.
-- [ ] Markdown → safe HTML via `league/commonmark` (sanitizing config), rendered server-side and passed to Inertia.
-- [ ] Image handling via medialibrary collections (`MediaCollection::Featured` / `Content`); expose URLs/conversions to the frontend.
+- [x] **A custom Form Request per write action** (never inline): `StorePostRequest`, `UpdatePostRequest`, `StoreCommentRequest`, `StoreCategoryRequest`, `UpdateCategoryRequest`, `StoreTagRequest`, `UpdateTagRequest`, `StoreMediaRequest`, … Each `authorize()` performs the authorization — `$user->can(PermissionName::...->value)` plus inline **ownership** checks for own-post actions (`$post->user_id === $user->id || $user->can('manage all posts')`); rules use `Rule::enum(PostStatus::class)` for status and image mime/size rules for uploads.
+- [x] Markdown → safe HTML via `league/commonmark` (sanitizing config), rendered server-side and passed to Inertia.
+- [x] Image handling via medialibrary collections (`MediaCollection::Featured` / `Content`); expose URLs/conversions to the frontend.
 
 ### 3.4 Routes (`routes/web.php`)
 
-- [ ] Public: `/`, `/blog`, `/blog/{post:slug}`, `POST /blog/{post:slug}/comments`, `/category/{slug}`, `/tag/{slug}`.
-- [ ] Admin under `Route::middleware(['auth','verified'])->prefix('admin')`: `dashboard`, `resource('posts')`, `resource('categories')`, `resource('tags')`, comment moderation, media upload, (optional) users. Per-action authorization via spatie `role`/`permission` middleware (and the Form Request `authorize()` checks).
+- [x] Public: `/`, `/blog`, `/blog/{post:slug}`, `POST /blog/{post:slug}/comments`. (`/category/{slug}`, `/tag/{slug}` covered via the blog `filter[category]`/`filter[tag]` params; dedicated routes deferred.)
+- [x] Admin under `Route::middleware(['auth','verified'])->prefix('admin')`: `resource('posts')`, `resource('categories')`, `resource('tags')`, comment moderation, media upload. Per-action authorization via spatie `role`/`permission` middleware (and the Form Request `authorize()` checks). Middleware aliases (`role`/`permission`/`role_or_permission`) registered in `bootstrap/app.php`. (admin `dashboard` + optional users deferred.)
 
 - **Tests (Phase 3):**
   - `PostManagementTest`: author can CRUD **own** posts, is forbidden on others'; admin can manage all; store/update honor `PostStatus`.

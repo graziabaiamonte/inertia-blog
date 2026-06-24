@@ -16,6 +16,8 @@ use Spatie\Permission\Traits\HasRoles;
 #[Hidden(['password', 'remember_token'])]
 /**
  * @method static \Illuminate\Database\Eloquent\Builder<static> role(string|array $roles, ?string $guard = null)
+ *
+ * @mixin IdeHelperUser
  */
 class User extends Authenticatable implements MustVerifyEmail
 {

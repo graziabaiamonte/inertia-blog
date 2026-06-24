@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\RoleName;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -47,4 +49,31 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
+}
+
+/**
+ * Create a user assigned the given role (roles must already be seeded).
+ */
+function userWithRole(string $role): User
+{
+    $user = User::factory()->create();
+    $user->assignRole($role);
+
+    return $user;
+}
+
+/**
+ * Create an admin user.
+ */
+function admin(): User
+{
+    return userWithRole(RoleName::Admin->value);
+}
+
+/**
+ * Create an author user.
+ */
+function author(): User
+{
+    return userWithRole(RoleName::Author->value);
 }
