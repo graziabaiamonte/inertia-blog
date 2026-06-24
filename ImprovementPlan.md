@@ -186,43 +186,43 @@ Execute **Phase 1 (Inertia v3 upgrade) first**, because it changes the framework
 
 For each file below, change the route parameter from `.id` to `.slug`.
 
-### [ ] Task 3.1 — Dashboard
+### [x] Task 3.1 — Dashboard
 - **File:** `resources/js/Pages/Dashboard.tsx`.
   - Edit link (~line 108): `route('admin.posts.edit', post.id)` → `route('admin.posts.edit', post.slug)`.
   - Delete link (~line 117): `route('admin.posts.destroy', post.id)` → `route('admin.posts.destroy', post.slug)`.
 - Confirm `slug` is not in the `$hidden` array of `app/Models/Post.php` (so it reaches the frontend). If it is hidden, expose it for this payload.
 
-### [ ] Task 3.2 — Admin Posts index
+### [x] Task 3.2 — Admin Posts index
 - **File:** `resources/js/Pages/Admin/Posts/Index.tsx`.
   - Edit (~line 98): `post.id` → `post.slug`.
   - Delete (~line 104): `post.id` → `post.slug`.
 
-### [ ] Task 3.3 — Admin Categories index
+### [x] Task 3.3 — Admin Categories index
 - **File:** `resources/js/Pages/Admin/Categories/Index.tsx`.
   - Edit (~line 67) and Delete: `cat.id` → `cat.slug`.
 
-### [ ] Task 3.4 — Admin Tags index
+### [x] Task 3.4 — Admin Tags index
 - **File:** `resources/js/Pages/Admin/Tags/Index.tsx`.
   - Edit (~line 69) and Delete: `tag.id` → `tag.slug`.
 
-### [ ] Task 3.5 — Edit Forms (update + media upload)
+### [x] Task 3.5 — Edit Forms (update + media upload)
 - **File:** `resources/js/Pages/Admin/Posts/Form.tsx`.
   - Update submit (~line 61): `route('admin.posts.update', post!.id)` → `route('admin.posts.update', post!.slug)`.
   - **Also check** the media upload call (`admin.posts.media.store`). This route also binds `{post}` by slug. Locate it (it may live in `Form.tsx` or in `resources/js/Components/ImageUpload.tsx`, which uses Axios). Whatever value identifies the post in that URL must be the **slug**, not the id. Update accordingly.
 - **File:** `resources/js/Pages/Admin/Categories/Form.tsx` (~line 25): `route('admin.categories.update', category!.id)` → `category!.slug`.
 - **File:** `resources/js/Pages/Admin/Tags/Form.tsx` (~line 24): `route('admin.tags.update', tag!.id)` → `tag!.slug`.
 
-### [ ] Task 3.6 — TypeScript types
+### [x] Task 3.6 — TypeScript types
 - In `resources/js/types/` (e.g. `index.ts`), ensure the types used by the pages above include `slug: string`:
   - `AdminPost` (used by Dashboard + Admin Posts index) must have `slug: string`.
   - The category/tag list-item types used by the admin index/form pages must have `slug: string`.
 - This keeps `./vendor/bin/sail npm run build` (TypeScript) green when referencing `.slug`.
 
-### [ ] Task 3.7 — Tests
+### [x] Task 3.7 — Tests
 - Add/adjust feature tests verifying an admin can: open the edit page, delete, and update a post/category/tag through the slug-bound routes (no 404). For an author, verify they can edit/delete **their own** post and are forbidden (403) on others' posts (authorization is unchanged; only the URL key changes).
 - Delegate to **`test-runner`**; suite must be green.
 
-### [ ] Task 3.8 — Build + style + commit
+### [x] Task 3.8 — Build + style + commit
 - `./vendor/bin/sail npm run build` (no TS errors); Prettier; then **`auto-commit`**.
 
 ---

@@ -56,13 +56,13 @@ export default function AdminCategoriesIndex({ categories }: Props & PageProps) 
                                             <td className="px-6 py-4 text-sm text-gray-500">{cat.posts_count ?? 0}</td>
                                             <td className="px-6 py-4 text-right text-sm">
                                                 <Link
-                                                    href={route('admin.categories.edit', cat.id)}
+                                                    href={route('admin.categories.edit', cat.slug)}
                                                     className="mr-3 text-indigo-600 hover:text-indigo-900"
                                                 >
                                                     Edit
                                                 </Link>
                                                 <Link
-                                                    href={route('admin.categories.destroy', cat.id)}
+                                                    href={route('admin.categories.destroy', cat.slug)}
                                                     method="delete"
                                                     as="button"
                                                     className="text-red-600 hover:text-red-900"

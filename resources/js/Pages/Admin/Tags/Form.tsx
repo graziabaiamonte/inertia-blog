@@ -21,7 +21,7 @@ export default function AdminTagForm({ tag }: Props & PageProps) {
     function handleSubmit(e: FormEvent) {
         e.preventDefault();
         if (isEditing) {
-            put(route('admin.tags.update', tag!.id));
+            put(route('admin.tags.update', tag!.slug));
         } else {
             post(route('admin.tags.store'));
         }

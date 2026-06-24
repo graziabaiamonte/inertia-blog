@@ -56,13 +56,13 @@ export default function AdminTagsIndex({ tags }: Props & PageProps) {
                                             <td className="px-6 py-4 text-sm text-gray-500">{tag.posts_count ?? 0}</td>
                                             <td className="px-6 py-4 text-right text-sm">
                                                 <Link
-                                                    href={route('admin.tags.edit', tag.id)}
+                                                    href={route('admin.tags.edit', tag.slug)}
                                                     className="mr-3 text-indigo-600 hover:text-indigo-900"
                                                 >
                                                     Edit
                                                 </Link>
                                                 <Link
-                                                    href={route('admin.tags.destroy', tag.id)}
+                                                    href={route('admin.tags.destroy', tag.slug)}
                                                     method="delete"
                                                     as="button"
                                                     className="text-red-600 hover:text-red-900"
