@@ -12,6 +12,7 @@ test('login screen can be rendered', function () {
 
 test('users can authenticate using the login screen', function () {
     /** @var TestCase $this */
+    /** @var User $user */
     $user = User::factory()->create();
 
     $response = $this->post('/login', [
@@ -25,6 +26,7 @@ test('users can authenticate using the login screen', function () {
 
 test('users can not authenticate with invalid password', function () {
     /** @var TestCase $this */
+    /** @var User $user */
     $user = User::factory()->create();
 
     $this->post('/login', [
@@ -37,6 +39,7 @@ test('users can not authenticate with invalid password', function () {
 
 test('users can logout', function () {
     /** @var TestCase $this */
+    /** @var User $user */
     $user = User::factory()->create();
 
     $response = $this->actingAs($user)->post('/logout');

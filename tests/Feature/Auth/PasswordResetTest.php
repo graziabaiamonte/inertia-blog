@@ -16,6 +16,7 @@ test('reset password link can be requested', function () {
     /** @var TestCase $this */
     Notification::fake();
 
+    /** @var User $user */
     $user = User::factory()->create();
 
     $this->post('/forgot-password', ['email' => $user->email]);
@@ -27,6 +28,7 @@ test('reset password screen can be rendered', function () {
     /** @var TestCase $this */
     Notification::fake();
 
+    /** @var User $user */
     $user = User::factory()->create();
 
     $this->post('/forgot-password', ['email' => $user->email]);

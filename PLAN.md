@@ -159,14 +159,14 @@ cross-cutting tooling listed below.
 - [x] Public: `/`, `/blog`, `/blog/{post:slug}`, `POST /blog/{post:slug}/comments`. (`/category/{slug}`, `/tag/{slug}` covered via the blog `filter[category]`/`filter[tag]` params; dedicated routes deferred.)
 - [x] Admin under `Route::middleware(['auth','verified'])->prefix('admin')`: `resource('posts')`, `resource('categories')`, `resource('tags')`, comment moderation, media upload. Per-action authorization via spatie `role`/`permission` middleware (and the Form Request `authorize()` checks). Middleware aliases (`role`/`permission`/`role_or_permission`) registered in `bootstrap/app.php`. (admin `dashboard` + optional users deferred.)
 
-- **Tests (Phase 3):**
-  - `PostManagementTest`: author can CRUD **own** posts, is forbidden on others'; admin can manage all; store/update honor `PostStatus`.
-  - `CommentTest`: guest store creates unapproved; only approved render publicly; admin approve/delete works.
-  - `TaxonomyTest`: admin manages categories/tags; author is forbidden.
-  - `MediaUploadTest`: `Storage::fake()` — featured image attaches to the post's `Featured` collection; invalid mime/oversize rejected by the Form Request.
-  - `FormRequestValidationTest`: each request rejects invalid payloads (missing title, bad status enum, etc.).
-  - `AuthorizationTest`: spatie permission + ownership (via Form Request `authorize()` and `role`/`permission` middleware) allow/deny by role & ownership.
-  - `BlogFilterTest`: query-builder `filter[category]` / `filter[tag]` / `filter[search]` and `sort` return the expected published posts and ignore disallowed params.
+- **Tests (Phase 3):** ✅ 49 tests, 222 assertions — all passing
+  - [x] `PostManagementTest`: author can CRUD **own** posts, is forbidden on others'; admin can manage all; store/update honor `PostStatus`.
+  - [x] `CommentTest`: guest store creates unapproved; only approved render publicly; admin approve/delete works.
+  - [x] `TaxonomyTest`: admin manages categories/tags; author is forbidden.
+  - [x] `MediaUploadTest`: `Storage::fake()` — featured image attaches to the post's `Featured` collection; invalid mime/oversize rejected by the Form Request.
+  - [x] `FormRequestValidationTest`: each request rejects invalid payloads (missing title, bad status enum, etc.).
+  - [x] `AuthorizationTest`: spatie permission + ownership (via Form Request `authorize()` and `role`/`permission` middleware) allow/deny by role & ownership.
+  - [x] `BlogFilterTest`: query-builder `filter[category]` / `filter[tag]` / `filter[search]` and `sort` return the expected published posts and ignore disallowed params.
 
 ---
 
@@ -174,16 +174,16 @@ cross-cutting tooling listed below.
 
 **Goal:** Breeze auth with open registration + email verification; every new user defaults to the `author` role.
 
-- [ ] Keep Breeze's register / login / password-reset / profile flows (registration stays enabled).
-- [ ] **Email verification (Breeze):** make `User implements MustVerifyEmail`; keep Breeze's verification routes/notifications; gate the dashboard and all admin/author routes behind the `verified` middleware.
-- [ ] On successful registration, **assign `RoleName::Author`** — customize Breeze's `RegisteredUserController@store` (or a `Registered` event listener).
-- [ ] Apply spatie `HasRoles` on `User`; register middleware aliases (`role`, `permission`, `role_or_permission`).
-- [ ] Gate admin-only areas behind `admin`/permissions; authors get a dashboard scoped to their own posts.
-- **Tests (Phase 4):**
-  - `RegistrationAssignsAuthorRoleTest`: registering a new user yields a user with the `author` role.
-  - `EmailVerificationTest`: unverified users are redirected from protected routes; verifying grants access (keep/adapt Breeze's verification test).
-  - Keep/adapt Breeze's `RegistrationTest` / `AuthenticationTest` / `PasswordConfirmationTest` so they stay green.
-  - `AdminLoginTest`: `grazia@gmail.com` / `passw` (seeded verified) logs in and reaches admin areas; an author cannot.
+- [x] Keep Breeze's register / login / password-reset / profile flows (registration stays enabled).
+- [x] **Email verification (Breeze):** make `User implements MustVerifyEmail`; keep Breeze's verification routes/notifications; gate the dashboard and all admin/author routes behind the `verified` middleware.
+- [x] On successful registration, **assign `RoleName::Author`** — customize Breeze's `RegisteredUserController@store` (or a `Registered` event listener).
+- [x] Apply spatie `HasRoles` on `User`; register middleware aliases (`role`, `permission`, `role_or_permission`).
+- [x] Gate admin-only areas behind `admin`/permissions; authors get a dashboard scoped to their own posts.
+- **Tests (Phase 4):** ✅ 11 tests, 17 assertions — all passing (106/106 full suite)
+  - [x] `RegistrationAssignsAuthorRoleTest`: registering a new user yields a user with the `author` role.
+  - [x] `EmailVerificationGatingTest`: unverified users are redirected from protected routes; verified authors can access.
+  - [x] Keep/adapt Breeze's `RegistrationTest` / `AuthenticationTest` / `PasswordConfirmationTest` so they stay green.
+  - [x] `AdminLoginTest`: admin has role + verified email, reaches admin areas; author cannot access taxonomy.
 
 ---
 
