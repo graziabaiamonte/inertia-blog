@@ -48,24 +48,15 @@ export default function AdminTagForm({ tag }: Props & PageProps) {
                             <TextInput
                                 id="name"
                                 value={data.name}
-                                onChange={(e) =>
-                                    setData('name', e.target.value)
-                                }
+                                onChange={(e) => setData('name', e.target.value)}
                                 className="mt-1 w-full"
                                 required
                             />
-                            <InputError
-                                message={errors.name}
-                                className="mt-1"
-                            />
+                            <InputError message={errors.name} className="mt-1" />
                         </div>
 
                         <PrimaryButton disabled={processing}>
-                            {processing
-                                ? 'Saving…'
-                                : isEditing
-                                  ? 'Update Tag'
-                                  : 'Create Tag'}
+                            {processing ? 'Saving…' : isEditing ? 'Update Tag' : 'Create Tag'}
                         </PrimaryButton>
                     </form>
                 </div>

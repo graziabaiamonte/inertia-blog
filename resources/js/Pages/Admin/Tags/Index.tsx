@@ -11,9 +11,7 @@ export default function AdminTagsIndex({ tags }: Props & PageProps) {
         <AuthenticatedLayout
             header={
                 <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                        Tags
-                    </h2>
+                    <h2 className="text-xl font-semibold leading-tight text-gray-800">Tags</h2>
                     <Link
                         href={route('admin.tags.create')}
                         className="rounded-md bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700"
@@ -46,24 +44,16 @@ export default function AdminTagsIndex({ tags }: Props & PageProps) {
                                             Posts
                                         </th>
                                         <th className="relative px-6 py-3">
-                                            <span className="sr-only">
-                                                Actions
-                                            </span>
+                                            <span className="sr-only">Actions</span>
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200 bg-white">
                                     {tags.map((tag) => (
                                         <tr key={tag.id} className="hover:bg-gray-50">
-                                            <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                                                {tag.name}
-                                            </td>
-                                            <td className="px-6 py-4 font-mono text-sm text-gray-500">
-                                                {tag.slug}
-                                            </td>
-                                            <td className="px-6 py-4 text-sm text-gray-500">
-                                                {tag.posts_count ?? 0}
-                                            </td>
+                                            <td className="px-6 py-4 text-sm font-medium text-gray-900">{tag.name}</td>
+                                            <td className="px-6 py-4 font-mono text-sm text-gray-500">{tag.slug}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-500">{tag.posts_count ?? 0}</td>
                                             <td className="px-6 py-4 text-right text-sm">
                                                 <Link
                                                     href={route('admin.tags.edit', tag.id)}

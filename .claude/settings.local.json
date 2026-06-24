@@ -20,7 +20,8 @@
       "Bash(grep -E \"\\\\.tsx$\")",
       "Bash(command -v npx)",
       "Read(//Applications/Google Chrome.app/Contents/MacOS/**)",
-      "Bash(python3 - __TRACKED_VAR__/home-dom.html)"
+      "Bash(python3 - __TRACKED_VAR__/home-dom.html)",
+      "Bash(./vendor/bin/sail composer *)"
     ]
   }
 }

@@ -9,18 +9,12 @@ export default function PublicLayout({ children }: PropsWithChildren) {
         <div className="flex min-h-screen flex-col bg-white">
             <header className="border-b border-gray-200 bg-white">
                 <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4 sm:px-6">
-                    <Link
-                        href={route('blog.index')}
-                        className="text-xl font-bold text-gray-900 hover:text-indigo-600"
-                    >
+                    <Link href={route('blog.index')} className="text-xl font-bold text-gray-900 hover:text-indigo-600">
                         Blog
                     </Link>
 
                     <nav className="flex items-center gap-4 text-sm">
-                        <Link
-                            href={route('blog.index')}
-                            className="text-gray-600 hover:text-gray-900"
-                        >
+                        <Link href={route('blog.index')} className="text-gray-600 hover:text-gray-900">
                             Articles
                         </Link>
 
@@ -33,10 +27,7 @@ export default function PublicLayout({ children }: PropsWithChildren) {
                             </Link>
                         ) : (
                             <>
-                                <Link
-                                    href={route('login')}
-                                    className="text-gray-600 hover:text-gray-900"
-                                >
+                                <Link href={route('login')} className="text-gray-600 hover:text-gray-900">
                                     Log in
                                 </Link>
                                 <Link

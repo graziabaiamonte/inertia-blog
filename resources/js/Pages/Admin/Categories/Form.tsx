@@ -49,44 +49,27 @@ export default function AdminCategoryForm({ category }: Props & PageProps) {
                             <TextInput
                                 id="name"
                                 value={data.name}
-                                onChange={(e) =>
-                                    setData('name', e.target.value)
-                                }
+                                onChange={(e) => setData('name', e.target.value)}
                                 className="mt-1 w-full"
                                 required
                             />
-                            <InputError
-                                message={errors.name}
-                                className="mt-1"
-                            />
+                            <InputError message={errors.name} className="mt-1" />
                         </div>
 
                         <div>
-                            <InputLabel
-                                htmlFor="description"
-                                value="Description (optional)"
-                            />
+                            <InputLabel htmlFor="description" value="Description (optional)" />
                             <textarea
                                 id="description"
                                 value={data.description}
-                                onChange={(e) =>
-                                    setData('description', e.target.value)
-                                }
+                                onChange={(e) => setData('description', e.target.value)}
                                 rows={3}
                                 className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                             />
-                            <InputError
-                                message={errors.description}
-                                className="mt-1"
-                            />
+                            <InputError message={errors.description} className="mt-1" />
                         </div>
 
                         <PrimaryButton disabled={processing}>
-                            {processing
-                                ? 'Saving…'
-                                : isEditing
-                                  ? 'Update Category'
-                                  : 'Create Category'}
+                            {processing ? 'Saving…' : isEditing ? 'Update Category' : 'Create Category'}
                         </PrimaryButton>
                     </form>
                 </div>

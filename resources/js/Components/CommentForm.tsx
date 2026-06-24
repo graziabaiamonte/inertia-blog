@@ -10,12 +10,11 @@ interface Props {
 }
 
 export default function CommentForm({ postSlug }: Props) {
-    const { data, setData, post, processing, errors, reset, wasSuccessful } =
-        useForm({
-            author_name: '',
-            author_email: '',
-            body: '',
-        });
+    const { data, setData, post, processing, errors, reset, wasSuccessful } = useForm({
+        author_name: '',
+        author_email: '',
+        body: '',
+    });
 
     function handleSubmit(e: FormEvent) {
         e.preventDefault();
@@ -26,9 +25,7 @@ export default function CommentForm({ postSlug }: Props) {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">
-                Leave a comment
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-900">Leave a comment</h3>
 
             {wasSuccessful && (
                 <div className="rounded-md bg-green-50 p-3 text-sm text-green-700">
@@ -42,9 +39,7 @@ export default function CommentForm({ postSlug }: Props) {
                     <TextInput
                         id="author_name"
                         value={data.author_name}
-                        onChange={(e) =>
-                            setData('author_name', e.target.value)
-                        }
+                        onChange={(e) => setData('author_name', e.target.value)}
                         className="mt-1 w-full"
                         required
                     />
@@ -57,16 +52,11 @@ export default function CommentForm({ postSlug }: Props) {
                         id="author_email"
                         type="email"
                         value={data.author_email}
-                        onChange={(e) =>
-                            setData('author_email', e.target.value)
-                        }
+                        onChange={(e) => setData('author_email', e.target.value)}
                         className="mt-1 w-full"
                         required
                     />
-                    <InputError
-                        message={errors.author_email}
-                        className="mt-1"
-                    />
+                    <InputError message={errors.author_email} className="mt-1" />
                 </div>
             </div>
 
@@ -83,9 +73,7 @@ export default function CommentForm({ postSlug }: Props) {
                 <InputError message={errors.body} className="mt-1" />
             </div>
 
-            <PrimaryButton disabled={processing}>
-                {processing ? 'Submitting…' : 'Post Comment'}
-            </PrimaryButton>
+            <PrimaryButton disabled={processing}>{processing ? 'Submitting…' : 'Post Comment'}</PrimaryButton>
         </form>
     );
 }

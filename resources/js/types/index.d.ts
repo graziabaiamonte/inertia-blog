@@ -83,9 +83,7 @@ export interface PaginatedResponse<T> {
     links: Array<{ url: string | null; label: string; active: boolean }>;
 }
 
-export type PageProps<
-    T extends Record<string, unknown> = Record<string, unknown>,
-> = T & {
+export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
     auth: {
         user: User | null;
         roles: string[];

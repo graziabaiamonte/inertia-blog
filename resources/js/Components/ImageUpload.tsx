@@ -37,11 +37,9 @@ export default function ImageUpload({
             try {
                 const form = new FormData();
                 form.append('featured_image', file);
-                const res = await axios.post(
-                    route('admin.posts.media.store', postId),
-                    form,
-                    { headers: { 'Content-Type': 'multipart/form-data' } },
-                );
+                const res = await axios.post(route('admin.posts.media.store', postId), form, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                });
                 onUploaded?.(res.data.url);
             } catch {
                 setUploadError('Upload failed. Please try again.');
@@ -56,21 +54,10 @@ export default function ImageUpload({
             <InputLabel value={label} />
 
             <div className="mt-1">
-                {preview && (
-                    <img
-                        src={preview}
-                        alt="Preview"
-                        className="mb-3 h-40 w-full rounded-md object-cover"
-                    />
-                )}
+                {preview && <img src={preview} alt="Preview" className="mb-3 h-40 w-full rounded-md object-cover" />}
 
                 <label className="flex cursor-pointer items-center gap-2 rounded-md border border-dashed border-gray-300 bg-gray-50 px-4 py-3 text-sm text-gray-600 hover:bg-gray-100">
-                    <svg
-                        className="h-5 w-5 text-gray-400"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
+                    <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -89,12 +76,7 @@ export default function ImageUpload({
                 </label>
             </div>
 
-            {(error || uploadError) && (
-                <InputError
-                    message={error ?? uploadError ?? ''}
-                    className="mt-1"
-                />
-            )}
+            {(error || uploadError) && <InputError message={error ?? uploadError ?? ''} className="mt-1" />}
         </div>
     );
 }

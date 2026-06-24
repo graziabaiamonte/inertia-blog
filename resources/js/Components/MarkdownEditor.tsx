@@ -65,9 +65,7 @@ export default function MarkdownEditor({
                         className="min-h-40 whitespace-pre-wrap p-3 font-mono text-sm text-gray-700"
                         style={{ minHeight: `${rows * 1.5}rem` }}
                     >
-                        {value || (
-                            <span className="text-gray-400">Nothing to preview.</span>
-                        )}
+                        {value || <span className="text-gray-400">Nothing to preview.</span>}
                     </div>
                 )}
             </div>

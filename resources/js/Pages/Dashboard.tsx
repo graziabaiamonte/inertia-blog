@@ -60,9 +60,7 @@ export default function Dashboard({ posts, auth }: Props & PageProps) {
                                             Published
                                         </th>
                                         <th className="relative px-6 py-3">
-                                            <span className="sr-only">
-                                                Actions
-                                            </span>
+                                            <span className="sr-only">Actions</span>
                                         </th>
                                     </tr>
                                 </thead>
@@ -70,25 +68,18 @@ export default function Dashboard({ posts, auth }: Props & PageProps) {
                                     {posts.data.map((post) => (
                                         <tr key={post.id}>
                                             <td className="px-6 py-4">
-                                                <span className="text-sm font-medium text-gray-900">
-                                                    {post.title}
-                                                </span>
+                                                <span className="text-sm font-medium text-gray-900">{post.title}</span>
                                                 {post.category && (
-                                                    <span className="ml-2 text-xs text-gray-400">
-                                                        {post.category}
-                                                    </span>
+                                                    <span className="ml-2 text-xs text-gray-400">{post.category}</span>
                                                 )}
                                             </td>
                                             {isAdmin && (
-                                                <td className="px-6 py-4 text-sm text-gray-500">
-                                                    {post.author}
-                                                </td>
+                                                <td className="px-6 py-4 text-sm text-gray-500">{post.author}</td>
                                             )}
                                             <td className="px-6 py-4">
                                                 <span
                                                     className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${
-                                                        post.status ===
-                                                        'published'
+                                                        post.status === 'published'
                                                             ? 'bg-green-100 text-green-800'
                                                             : 'bg-yellow-100 text-yellow-800'
                                                     }`}
@@ -98,36 +89,23 @@ export default function Dashboard({ posts, auth }: Props & PageProps) {
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-500">
                                                 {post.published_at
-                                                    ? new Date(
-                                                          post.published_at,
-                                                      ).toLocaleDateString()
+                                                    ? new Date(post.published_at).toLocaleDateString()
                                                     : '—'}
                                             </td>
                                             <td className="px-6 py-4 text-right text-sm">
                                                 <Link
-                                                    href={route(
-                                                        'admin.posts.edit',
-                                                        post.id,
-                                                    )}
+                                                    href={route('admin.posts.edit', post.id)}
                                                     className="mr-3 text-indigo-600 hover:text-indigo-900"
                                                 >
                                                     Edit
                                                 </Link>
                                                 <Link
-                                                    href={route(
-                                                        'admin.posts.destroy',
-                                                        post.id,
-                                                    )}
+                                                    href={route('admin.posts.destroy', post.id)}
                                                     method="delete"
                                                     as="button"
                                                     className="text-red-600 hover:text-red-900"
                                                     onClick={(e) => {
-                                                        if (
-                                                            !confirm(
-                                                                'Delete this post?',
-                                                            )
-                                                        )
-                                                            e.preventDefault();
+                                                        if (!confirm('Delete this post?')) e.preventDefault();
                                                     }}
                                                 >
                                                     Delete
