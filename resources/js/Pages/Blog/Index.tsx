@@ -13,13 +13,7 @@ interface Props {
     tags: Array<Pick<Tag, 'name' | 'slug'>>;
 }
 
-export default function BlogIndex({
-    posts,
-    filters,
-    sort,
-    categories,
-    tags,
-}: Props & PageProps) {
+export default function BlogIndex({ posts, filters, sort, categories, tags }: Props & PageProps) {
     const [search, setSearch] = useState(filters.search ?? '');
 
     function applyFilter(params: Record<string, string | null>) {
@@ -55,9 +49,7 @@ export default function BlogIndex({
             <Head title="Blog" />
 
             <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-                <h1 className="mb-8 text-3xl font-bold text-gray-900">
-                    Articles
-                </h1>
+                <h1 className="mb-8 text-3xl font-bold text-gray-900">Articles</h1>
 
                 {/* Filters */}
                 <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -92,17 +84,21 @@ export default function BlogIndex({
                     <div className="flex items-center gap-2 text-sm">
                         <span className="text-gray-500">Sort:</span>
                         <button
-                            onClick={() =>
-                                applyFilter({ sort: '-published_at' })
+                            onClick={() => applyFilter({ sort: '-published_at' })}
+                            className={
+                                sort === '-published_at' || !sort
+                                    ? 'font-semibold text-indigo-600'
+                                    : 'text-gray-600 hover:text-gray-900'
                             }
-                            className={sort === '-published_at' || !sort ? 'font-semibold text-indigo-600' : 'text-gray-600 hover:text-gray-900'}
                         >
                             Newest
                         </button>
                         <span className="text-gray-300">|</span>
                         <button
                             onClick={() => applyFilter({ sort: 'title' })}
-                            className={sort === 'title' ? 'font-semibold text-indigo-600' : 'text-gray-600 hover:text-gray-900'}
+                            className={
+                                sort === 'title' ? 'font-semibold text-indigo-600' : 'text-gray-600 hover:text-gray-900'
+                            }
                         >
                             A–Z
                         </button>
@@ -113,9 +109,7 @@ export default function BlogIndex({
                 {categories.length > 0 && (
                     <div className="mb-4 flex flex-wrap gap-2">
                         <button
-                            onClick={() =>
-                                applyFilter({ 'filter[category]': null })
-                            }
+                            onClick={() => applyFilter({ 'filter[category]': null })}
                             className={`rounded-full px-3 py-1 text-xs ${
                                 !activeCategory
                                     ? 'bg-indigo-600 text-white'
@@ -153,10 +147,7 @@ export default function BlogIndex({
                                 key={t.slug}
                                 onClick={() =>
                                     applyFilter({
-                                        'filter[tag]':
-                                            activeTag === t.slug
-                                                ? null
-                                                : t.slug,
+                                        'filter[tag]': activeTag === t.slug ? null : t.slug,
                                         'filter[category]': null,
                                     })
                                 }
@@ -174,9 +165,7 @@ export default function BlogIndex({
 
                 {/* Posts grid */}
                 {posts.data.length === 0 ? (
-                    <p className="py-16 text-center text-gray-500">
-                        No articles found.
-                    </p>
+                    <p className="py-16 text-center text-gray-500">No articles found.</p>
                 ) : (
                     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         {posts.data.map((post) => (

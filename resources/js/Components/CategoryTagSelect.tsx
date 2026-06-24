@@ -34,11 +34,12 @@ export default function CategoryTagSelect(props: Props) {
 
     if (props.multi) {
         const selected = props.value;
+        const onChange = props.onChange;
         function toggle(optId: number) {
             if (selected.includes(optId)) {
-                props.onChange(selected.filter((v) => v !== optId));
+                onChange(selected.filter((v) => v !== optId));
             } else {
-                props.onChange([...selected, optId]);
+                onChange([...selected, optId]);
             }
         }
 

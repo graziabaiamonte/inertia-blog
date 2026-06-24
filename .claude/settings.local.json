@@ -17,7 +17,10 @@
       "Bash(cp tests/Feature/Phase3/PostManagementTest.php __TRACKED_VAR__/test/)",
       "Bash(cp tests/Feature/Phase4/EmailVerificationGatingTest.php __TRACKED_VAR__/test/)",
       "Bash(python3 __TRACKED_VAR__/fix.py __TRACKED_VAR__/test/PostManagementTest.php __TRACKED_VAR__/test/EmailVerificationGatingTest.php)",
-      "Bash(grep -E \"\\\\.tsx$\")"
+      "Bash(grep -E \"\\\\.tsx$\")",
+      "Bash(command -v npx)",
+      "Read(//Applications/Google Chrome.app/Contents/MacOS/**)",
+      "Bash(python3 - __TRACKED_VAR__/home-dom.html)"
     ]
   }
 }

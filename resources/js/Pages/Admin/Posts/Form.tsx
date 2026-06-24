@@ -6,7 +6,8 @@ import MarkdownEditor from '@/Components/MarkdownEditor';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { AdminPostForm, Category, PageProps, Tag } from '@/types';
+import { Category, PageProps, Tag } from '@/types';
+import type { AdminPostForm } from '@/types';
 import { PostStatus } from '@/types/enums';
 import { Head, useForm } from '@inertiajs/react';
 import { FormEvent } from 'react';
@@ -31,7 +32,7 @@ export default function AdminPostForm({
 }: Props & PageProps) {
     const isEditing = !!post;
 
-    const { data, setData, post: submit, put, processing, errors } = useForm({
+    const { data, setData, post: submit, transform, processing, errors } = useForm({
         title: post?.title ?? '',
         excerpt: post?.excerpt ?? '',
         body: post?.body ?? '',
@@ -45,26 +46,30 @@ export default function AdminPostForm({
     function handleSubmit(e: FormEvent) {
         e.preventDefault();
 
-        const formData = new FormData();
-        formData.append('title', data.title);
-        formData.append('excerpt', data.excerpt);
-        formData.append('body', data.body);
-        if (data.category_id !== null)
-            formData.append('category_id', String(data.category_id));
-        formData.append('status', data.status);
-        if (data.published_at) formData.append('published_at', data.published_at);
-        data.tags.forEach((id) => formData.append('tags[]', String(id)));
-        if (data.featured_image) formData.append('featured_image', data.featured_image);
+        transform(() => {
+            const formData = new FormData();
+            formData.append('title', data.title);
+            formData.append('excerpt', data.excerpt);
+            formData.append('body', data.body);
+            if (data.category_id !== null)
+                formData.append('category_id', String(data.category_id));
+            formData.append('status', data.status);
+            if (data.published_at)
+                formData.append('published_at', data.published_at);
+            data.tags.forEach((id) => formData.append('tags[]', String(id)));
+            if (data.featured_image)
+                formData.append('featured_image', data.featured_image);
+            if (isEditing) formData.append('_method', 'PUT');
+
+            return formData;
+        });
 
         if (isEditing) {
-            formData.append('_method', 'PUT');
             submit(route('admin.posts.update', post!.id), {
-                data: formData,
                 forceFormData: true,
             });
         } else {
             submit(route('admin.posts.store'), {
-                data: formData,
                 forceFormData: true,
             });
         }
