@@ -50,6 +50,10 @@ cross-cutting tooling listed below.
 
 ---
 
+> **Workflow rule:** after completing each task and marking it `[x]`, immediately invoke the **`auto-commit`** agent (via `subagent_type: "auto-commit"`). The agent stages all changes and creates a git commit whose message includes the phase and task number.
+
+---
+
 ## Phase 0 — Prerequisites check
 
 **Goal:** Confirm the host is ready before scaffolding.
@@ -97,16 +101,16 @@ cross-cutting tooling listed below.
 
 ### 2.1 Enums (`app/Enums/`)
 
-- [ ] Create `PostStatus`, `RoleName`, `PermissionName`, `MediaCollection` backed enums (see Context). Add a `label()` helper where useful for the UI.
+- [x] Create `PostStatus`, `RoleName`, `PermissionName`, `MediaCollection` backed enums (see Context). Add a `label()` helper where useful for the UI.
 
 ### 2.2 Migrations (`database/migrations/`)
 
-- [ ] `categories`: `id, name, slug (unique), description (nullable), timestamps`.
-- [ ] `tags`: `id, name, slug (unique), timestamps`.
-- [ ] `posts`: `id, user_id (FK), category_id (FK nullable), title, slug (unique), excerpt (nullable), body (longText), status (string, default PostStatus::Draft->value), published_at (nullable), timestamps`. **No `featured_image` column — medialibrary handles it.**
-- [ ] `post_tag` pivot: `post_id, tag_id` (composite unique, cascade on delete).
-- [ ] `comments`: `id, post_id (FK), author_name, author_email, body, approved (bool default false), timestamps`.
-- [ ] Spatie permission tables + medialibrary `media` table (from published migrations).
+- [x] `categories`: `id, name, slug (unique), description (nullable), timestamps`.
+- [x] `tags`: `id, name, slug (unique), timestamps`.
+- [x] `posts`: `id, user_id (FK), category_id (FK nullable), title, slug (unique), excerpt (nullable), body (longText), status (string, default PostStatus::Draft->value), published_at (nullable), timestamps`. **No `featured_image` column — medialibrary handles it.**
+- [x] `post_tag` pivot: `post_id, tag_id` (composite unique, cascade on delete).
+- [x] `comments`: `id, post_id (FK), author_name, author_email, body, approved (bool default false), timestamps`.
+- [x] Spatie permission tables + medialibrary `media` table (from published migrations).
 
 ### 2.3 Models (`app/Models/`)
 
