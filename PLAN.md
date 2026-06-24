@@ -193,23 +193,23 @@ cross-cutting tooling listed below.
 
 ### 5.1 Types, axios, i18n & layouts (`resources/js/`)
 
-- [ ] `types/enums.ts` mirroring `PostStatus` / `RoleName` / `MediaCollection`; types for `User` (roles/permissions), `Post` (media URLs), `Category`, `Tag`, `Comment`, paginated responses, shared page props (incl. `locale` + `translations`).
-- [ ] `lib/axios.ts`: configured **Axios** instance (base URL, JSON + `X-Requested-With` headers, XSRF cookie) — used for direct HTTP calls (e.g. media upload).
-- [ ] **i18n bridge:** share `locale` + the JSON `translations` dictionary as an Inertia shared prop; a small `useTranslations()`/`t()` helper resolves keys client-side (mirrors the server JSON files).
-- [ ] `PublicLayout` (visitor header/nav/footer); reuse Breeze's `AuthenticatedLayout` for the dashboard, conditionally rendering admin-only nav from the shared auth/permissions prop.
+- [x] `types/enums.ts` mirroring `PostStatus` / `RoleName` / `MediaCollection`; types for `User` (roles/permissions), `Post` (media URLs), `Category`, `Tag`, `Comment`, paginated responses, shared page props (incl. `locale` + `translations`).
+- [x] `lib/axios.ts`: configured **Axios** instance (base URL, JSON + `X-Requested-With` headers, XSRF cookie) — used for direct HTTP calls (e.g. media upload).
+- [x] **i18n bridge:** share `locale` + the JSON `translations` dictionary as an Inertia shared prop; a small `useTranslations()`/`t()` helper resolves keys client-side (mirrors the server JSON files).
+- [x] `PublicLayout` (visitor header/nav/footer); reuse Breeze's `AuthenticatedLayout` for the dashboard, conditionally rendering admin-only nav from the shared auth/permissions prop.
 
 ### 5.2 Public pages (`resources/js/pages/blog/`)
 
-- [ ] `Index.tsx` (grid + pagination + filters), `Show.tsx` (post HTML + featured image + comments + comment form).
+- [x] `Index.tsx` (grid + pagination + filters), `Show.tsx` (post HTML + featured image + comments + comment form).
 
 ### 5.3 Dashboard pages (`resources/js/pages/admin/`)
 
-- [ ] `Dashboard.tsx` (role-scoped), `posts/Index.tsx` (own for authors, all for admin), `posts/Form.tsx` (Markdown editor, featured-image upload, status select from `PostStatus`, category/tag pickers), taxonomy pages (admin), comment moderation (admin), optional user management (admin).
+- [x] `Dashboard.tsx` (role-scoped), `posts/Index.tsx` (own for authors, all for admin), `posts/Form.tsx` (Markdown editor, featured-image upload, status select from `PostStatus`, category/tag pickers), taxonomy pages (admin), comment moderation (admin), optional user management (admin).
 
 ### 5.4 Components (`resources/js/components/`)
 
-- [ ] `PostCard`, `CommentList`, `CommentForm`, `MarkdownEditor` (e.g. `@uiw/react-md-editor`), `ImageUpload`/featured-image picker (uploads to medialibrary endpoint **via the Axios instance**), `CategoryTagSelect`, `Pagination` (drives query-builder filter params). Forms via Inertia `useForm`; errors surface from the custom Form Requests; user-facing strings via the `t()` i18n helper.
-- **Tests (Phase 5):** Inertia server-side page assertions (`assertInertia` → component + props) for blog index/show and the admin post form; optional component smoke tests.
+- [x] `PostCard`, `CommentList`, `CommentForm`, `MarkdownEditor` (e.g. `@uiw/react-md-editor`), `ImageUpload`/featured-image picker (uploads to medialibrary endpoint **via the Axios instance**), `CategoryTagSelect`, `Pagination` (drives query-builder filter params). Forms via Inertia `useForm`; errors surface from the custom Form Requests; user-facing strings via the `t()` i18n helper.
+- **Tests (Phase 5):** ✅ 16 tests, all passing — Inertia server-side page assertions (`assertInertia` → component + props) for blog index/show, admin post form (create + edit), shared locale/translations/roles props, authorization checks.
 
 ---
 

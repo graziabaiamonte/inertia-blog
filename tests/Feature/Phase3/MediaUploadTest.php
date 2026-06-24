@@ -16,6 +16,7 @@ beforeEach(function () {
 });
 
 it('attaches an uploaded featured image to the post', function () {
+    /** @var TestCase $this */
     $author = author();
 
     $this->actingAs($author)->post(route('admin.posts.store'), [
@@ -30,6 +31,7 @@ it('attaches an uploaded featured image to the post', function () {
 });
 
 it('rejects a non-image featured upload', function () {
+    /** @var TestCase $this */
     $author = author();
 
     $this->actingAs($author)->post(route('admin.posts.store'), [
@@ -43,6 +45,7 @@ it('rejects a non-image featured upload', function () {
 });
 
 it('rejects an oversized featured upload', function () {
+    /** @var TestCase $this */
     $author = author();
 
     $this->actingAs($author)->post(route('admin.posts.store'), [
@@ -54,6 +57,7 @@ it('rejects an oversized featured upload', function () {
 });
 
 it('lets an author upload an inline content image to their post', function () {
+    /** @var TestCase $this */
     $author = author();
     $post = Post::factory()->for($author)->create();
 
@@ -68,6 +72,7 @@ it('lets an author upload an inline content image to their post', function () {
 });
 
 it('forbids uploading an inline image to another author post', function () {
+    /** @var TestCase $this */
     $post = Post::factory()->for(author())->create();
 
     $this->actingAs(author())

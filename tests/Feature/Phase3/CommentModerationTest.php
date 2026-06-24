@@ -12,6 +12,7 @@ beforeEach(function () {
 });
 
 it('lets an admin list comments for moderation', function () {
+    /** @var TestCase $this */
     Comment::factory()->for(Post::factory())->count(3)->create();
 
     $this->actingAs(admin())
@@ -21,6 +22,7 @@ it('lets an admin list comments for moderation', function () {
 });
 
 it('lets an admin approve a pending comment', function () {
+    /** @var TestCase $this */
     $comment = Comment::factory()->for(Post::factory())->create(['approved' => false]);
 
     $this->actingAs(admin())
@@ -31,6 +33,7 @@ it('lets an admin approve a pending comment', function () {
 });
 
 it('lets an admin delete a comment', function () {
+    /** @var TestCase $this */
     $comment = Comment::factory()->for(Post::factory())->create();
 
     $this->actingAs(admin())
@@ -41,6 +44,7 @@ it('lets an admin delete a comment', function () {
 });
 
 it('forbids an author from moderating comments', function () {
+    /** @var TestCase $this */
     $comment = Comment::factory()->for(Post::factory())->create(['approved' => false]);
 
     $this->actingAs(author())

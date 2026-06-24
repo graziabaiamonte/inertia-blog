@@ -7,7 +7,7 @@ interface Props {
     posts: PaginatedResponse<AdminPost>;
 }
 
-export default function Dashboard({ posts, auth }: Props & PageProps) {
+export default function AdminPostsIndex({ posts, auth }: Props & PageProps) {
     const isAdmin = auth.roles.includes('admin');
 
     return (
@@ -15,7 +15,7 @@ export default function Dashboard({ posts, auth }: Props & PageProps) {
             header={
                 <div className="flex items-center justify-between">
                     <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                        {isAdmin ? 'Admin Dashboard' : 'My Posts'}
+                        Posts
                     </h2>
                     <Link
                         href={route('admin.posts.create')}
@@ -26,19 +26,13 @@ export default function Dashboard({ posts, auth }: Props & PageProps) {
                 </div>
             }
         >
-            <Head title="Dashboard" />
+            <Head title="Posts" />
 
             <div className="py-8">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     {posts.data.length === 0 ? (
-                        <div className="rounded-lg border border-gray-200 bg-white p-12 text-center">
-                            <p className="text-gray-500">No posts yet.</p>
-                            <Link
-                                href={route('admin.posts.create')}
-                                className="mt-4 inline-block text-indigo-600 hover:underline"
-                            >
-                                Write your first post →
-                            </Link>
+                        <div className="rounded-lg border border-dashed border-gray-300 bg-white p-12 text-center text-gray-500">
+                            No posts yet.
                         </div>
                     ) : (
                         <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
@@ -54,6 +48,9 @@ export default function Dashboard({ posts, auth }: Props & PageProps) {
                                             </th>
                                         )}
                                         <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                                            Category
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                                             Status
                                         </th>
                                         <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
@@ -68,27 +65,22 @@ export default function Dashboard({ posts, auth }: Props & PageProps) {
                                 </thead>
                                 <tbody className="divide-y divide-gray-200 bg-white">
                                     {posts.data.map((post) => (
-                                        <tr key={post.id}>
-                                            <td className="px-6 py-4">
-                                                <span className="text-sm font-medium text-gray-900">
-                                                    {post.title}
-                                                </span>
-                                                {post.category && (
-                                                    <span className="ml-2 text-xs text-gray-400">
-                                                        {post.category}
-                                                    </span>
-                                                )}
+                                        <tr key={post.id} className="hover:bg-gray-50">
+                                            <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                                                {post.title}
                                             </td>
                                             {isAdmin && (
                                                 <td className="px-6 py-4 text-sm text-gray-500">
-                                                    {post.author}
+                                                    {post.author ?? '—'}
                                                 </td>
                                             )}
+                                            <td className="px-6 py-4 text-sm text-gray-500">
+                                                {post.category ?? '—'}
+                                            </td>
                                             <td className="px-6 py-4">
                                                 <span
                                                     className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${
-                                                        post.status ===
-                                                        'published'
+                                                        post.status === 'published'
                                                             ? 'bg-green-100 text-green-800'
                                                             : 'bg-yellow-100 text-yellow-800'
                                                     }`}
@@ -98,36 +90,23 @@ export default function Dashboard({ posts, auth }: Props & PageProps) {
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-500">
                                                 {post.published_at
-                                                    ? new Date(
-                                                          post.published_at,
-                                                      ).toLocaleDateString()
+                                                    ? new Date(post.published_at).toLocaleDateString()
                                                     : '—'}
                                             </td>
                                             <td className="px-6 py-4 text-right text-sm">
                                                 <Link
-                                                    href={route(
-                                                        'admin.posts.edit',
-                                                        post.id,
-                                                    )}
+                                                    href={route('admin.posts.edit', post.id)}
                                                     className="mr-3 text-indigo-600 hover:text-indigo-900"
                                                 >
                                                     Edit
                                                 </Link>
                                                 <Link
-                                                    href={route(
-                                                        'admin.posts.destroy',
-                                                        post.id,
-                                                    )}
+                                                    href={route('admin.posts.destroy', post.id)}
                                                     method="delete"
                                                     as="button"
                                                     className="text-red-600 hover:text-red-900"
                                                     onClick={(e) => {
-                                                        if (
-                                                            !confirm(
-                                                                'Delete this post?',
-                                                            )
-                                                        )
-                                                            e.preventDefault();
+                                                        if (!confirm('Delete this post?')) e.preventDefault();
                                                     }}
                                                 >
                                                     Delete

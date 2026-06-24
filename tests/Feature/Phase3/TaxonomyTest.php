@@ -12,6 +12,7 @@ beforeEach(function () {
 });
 
 it('lets an admin create a category', function () {
+    /** @var TestCase $this */
     $this->actingAs(admin())->post(route('admin.categories.store'), [
         'name' => 'Laravel',
     ])->assertRedirect(route('admin.categories.index'));
@@ -20,6 +21,7 @@ it('lets an admin create a category', function () {
 });
 
 it('lets an admin update and delete a category', function () {
+    /** @var TestCase $this */
     $category = Category::factory()->create();
 
     $this->actingAs(admin())->put(route('admin.categories.update', $category), [
@@ -33,6 +35,7 @@ it('lets an admin update and delete a category', function () {
 });
 
 it('lets an admin create a tag', function () {
+    /** @var TestCase $this */
     $this->actingAs(admin())->post(route('admin.tags.store'), [
         'name' => 'PHP',
     ])->assertRedirect(route('admin.tags.index'));
@@ -41,6 +44,7 @@ it('lets an admin create a tag', function () {
 });
 
 it('forbids an author from managing categories', function () {
+    /** @var TestCase $this */
     $author = author();
 
     $this->actingAs($author)->get(route('admin.categories.index'))->assertForbidden();
@@ -51,6 +55,7 @@ it('forbids an author from managing categories', function () {
 });
 
 it('forbids an author from managing tags', function () {
+    /** @var TestCase $this */
     $author = author();
     $tag = Tag::factory()->create();
 

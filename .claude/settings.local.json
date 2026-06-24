@@ -12,7 +12,12 @@
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
       "Bash(./vendor/bin/sail tinker '--execute= *)",
-      "Bash(./vendor/bin/sail pint *)"
+      "Bash(./vendor/bin/sail pint *)",
+      "Bash(mkdir -p __TRACKED_VAR__/test)",
+      "Bash(cp tests/Feature/Phase3/PostManagementTest.php __TRACKED_VAR__/test/)",
+      "Bash(cp tests/Feature/Phase4/EmailVerificationGatingTest.php __TRACKED_VAR__/test/)",
+      "Bash(python3 __TRACKED_VAR__/fix.py __TRACKED_VAR__/test/PostManagementTest.php __TRACKED_VAR__/test/EmailVerificationGatingTest.php)",
+      "Bash(grep -E \"\\\\.tsx$\")"
     ]
   }
 }
