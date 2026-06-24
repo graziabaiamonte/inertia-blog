@@ -2,6 +2,7 @@
 
 use App\Enums\RoleName;
 use App\Models\User;
+use Database\Seeders\DatabaseSeeder;
 use Database\Seeders\RolePermissionSeeder;
 use Tests\TestCase;
 
@@ -50,7 +51,7 @@ test('unverified user is redirected from dashboard', function () {
 
 test('seeded admin grazia@gmail.com exists with admin role and verified email', function () {
     /** @var TestCase $this */
-    $this->seed(\Database\Seeders\DatabaseSeeder::class);
+    $this->seed(DatabaseSeeder::class);
 
     /** @var User $admin */
     $admin = User::where('email', 'grazia@gmail.com')->firstOrFail();

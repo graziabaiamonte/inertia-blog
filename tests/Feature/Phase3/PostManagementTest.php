@@ -13,6 +13,7 @@ beforeEach(function () {
 });
 
 it('lets an author create a post they own', function () {
+    /** @var TestCase $this */
     $author = author();
     $category = Category::factory()->create();
 
@@ -33,6 +34,7 @@ it('lets an author create a post they own', function () {
 });
 
 it('sets published_at when an author publishes a post', function () {
+    /** @var TestCase $this */
     $author = author();
 
     $this->actingAs($author)->post(route('admin.posts.store'), [
@@ -47,6 +49,7 @@ it('sets published_at when an author publishes a post', function () {
 });
 
 it('lets an author update their own post', function () {
+    /** @var TestCase $this */
     $author = author();
     $post = Post::factory()->for($author)->draft()->create();
 
@@ -60,6 +63,7 @@ it('lets an author update their own post', function () {
 });
 
 it('forbids an author from updating another author post', function () {
+    /** @var TestCase $this */
     $owner = author();
     $intruder = author();
     $post = Post::factory()->for($owner)->create();
@@ -74,6 +78,7 @@ it('forbids an author from updating another author post', function () {
 });
 
 it('forbids an author from deleting another author post', function () {
+    /** @var TestCase $this */
     $owner = author();
     $intruder = author();
     $post = Post::factory()->for($owner)->create();
@@ -86,6 +91,7 @@ it('forbids an author from deleting another author post', function () {
 });
 
 it('lets an admin update any post', function () {
+    /** @var TestCase $this */
     $author = author();
     $admin = admin();
     $post = Post::factory()->for($author)->create();
@@ -100,6 +106,7 @@ it('lets an admin update any post', function () {
 });
 
 it('lets an admin delete any post', function () {
+    /** @var TestCase $this */
     $post = Post::factory()->for(author())->create();
 
     $this->actingAs(admin())
@@ -110,6 +117,7 @@ it('lets an admin delete any post', function () {
 });
 
 it('scopes the author post index to their own posts', function () {
+    /** @var TestCase $this */
     $author = author();
     Post::factory()->for($author)->count(2)->create();
     Post::factory()->for(author())->count(3)->create();
@@ -120,6 +128,7 @@ it('scopes the author post index to their own posts', function () {
 });
 
 it('shows the admin every post in the index', function () {
+    /** @var TestCase $this */
     Post::factory()->for(author())->count(2)->create();
     Post::factory()->for(author())->count(3)->create();
 

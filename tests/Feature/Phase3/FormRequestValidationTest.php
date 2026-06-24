@@ -14,6 +14,7 @@ beforeEach(function () {
 });
 
 it('rejects a post without a title', function () {
+    /** @var TestCase $this */
     $this->actingAs(author())->post(route('admin.posts.store'), [
         'title' => '',
         'body' => 'Body',
@@ -22,6 +23,7 @@ it('rejects a post without a title', function () {
 });
 
 it('rejects a post with an invalid status enum', function () {
+    /** @var TestCase $this */
     $this->actingAs(author())->post(route('admin.posts.store'), [
         'title' => 'Title',
         'body' => 'Body',
@@ -30,6 +32,7 @@ it('rejects a post with an invalid status enum', function () {
 });
 
 it('rejects a post with a non-existent category', function () {
+    /** @var TestCase $this */
     $this->actingAs(author())->post(route('admin.posts.store'), [
         'title' => 'Title',
         'body' => 'Body',
@@ -39,6 +42,7 @@ it('rejects a post with a non-existent category', function () {
 });
 
 it('rejects a duplicate post slug', function () {
+    /** @var TestCase $this */
     $author = author();
     Post::factory()->for($author)->create(['slug' => 'taken']);
 
@@ -51,12 +55,14 @@ it('rejects a duplicate post slug', function () {
 });
 
 it('rejects a category without a name', function () {
+    /** @var TestCase $this */
     $this->actingAs(admin())->post(route('admin.categories.store'), [
         'name' => '',
     ])->assertSessionHasErrors('name');
 });
 
 it('rejects a duplicate category slug', function () {
+    /** @var TestCase $this */
     Category::factory()->create(['slug' => 'php']);
 
     $this->actingAs(admin())->post(route('admin.categories.store'), [
@@ -66,12 +72,14 @@ it('rejects a duplicate category slug', function () {
 });
 
 it('rejects a tag without a name', function () {
+    /** @var TestCase $this */
     $this->actingAs(admin())->post(route('admin.tags.store'), [
         'name' => '',
     ])->assertSessionHasErrors('name');
 });
 
 it('rejects a duplicate tag slug', function () {
+    /** @var TestCase $this */
     Tag::factory()->create(['slug' => 'laravel']);
 
     $this->actingAs(admin())->post(route('admin.tags.store'), [

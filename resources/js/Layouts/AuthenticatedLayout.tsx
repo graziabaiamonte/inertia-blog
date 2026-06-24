@@ -2,6 +2,7 @@ import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
+import { PageProps } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { PropsWithChildren, ReactNode, useState } from 'react';
 
@@ -9,7 +10,9 @@ export default function Authenticated({
     header,
     children,
 }: PropsWithChildren<{ header?: ReactNode }>) {
-    const user = usePage().props.auth.user;
+    const { auth } = usePage<PageProps>().props;
+    const user = auth.user!;
+    const isAdmin = auth.roles.includes('admin');
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
@@ -33,6 +36,40 @@ export default function Authenticated({
                                 >
                                     Dashboard
                                 </NavLink>
+                                <NavLink
+                                    href={route('admin.posts.index')}
+                                    active={route().current('admin.posts.*')}
+                                >
+                                    Posts
+                                </NavLink>
+                                {isAdmin && (
+                                    <>
+                                        <NavLink
+                                            href={route('admin.categories.index')}
+                                            active={route().current(
+                                                'admin.categories.*',
+                                            )}
+                                        >
+                                            Categories
+                                        </NavLink>
+                                        <NavLink
+                                            href={route('admin.tags.index')}
+                                            active={route().current(
+                                                'admin.tags.*',
+                                            )}
+                                        >
+                                            Tags
+                                        </NavLink>
+                                        <NavLink
+                                            href={route('admin.comments.index')}
+                                            active={route().current(
+                                                'admin.comments.*',
+                                            )}
+                                        >
+                                            Comments
+                                        </NavLink>
+                                    </>
+                                )}
                             </div>
                         </div>
 
@@ -137,6 +174,38 @@ export default function Authenticated({
                         >
                             Dashboard
                         </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('admin.posts.index')}
+                            active={route().current('admin.posts.*')}
+                        >
+                            Posts
+                        </ResponsiveNavLink>
+                        {isAdmin && (
+                            <>
+                                <ResponsiveNavLink
+                                    href={route('admin.categories.index')}
+                                    active={route().current(
+                                        'admin.categories.*',
+                                    )}
+                                >
+                                    Categories
+                                </ResponsiveNavLink>
+                                <ResponsiveNavLink
+                                    href={route('admin.tags.index')}
+                                    active={route().current('admin.tags.*')}
+                                >
+                                    Tags
+                                </ResponsiveNavLink>
+                                <ResponsiveNavLink
+                                    href={route('admin.comments.index')}
+                                    active={route().current(
+                                        'admin.comments.*',
+                                    )}
+                                >
+                                    Comments
+                                </ResponsiveNavLink>
+                            </>
+                        )}
                     </div>
 
                     <div className="border-t border-gray-200 pb-1 pt-4">

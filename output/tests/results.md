@@ -1,27 +1,26 @@
 # Test Run
 
 **Date:** 2026-06-24
-**Time:** (latest run)
+**Time:** (current session)
 
 ## Scope
-Full suite — `./vendor/bin/sail artisan test --no-coverage`
+Full suite — `./vendor/bin/sail artisan test`
 
 ## Summary
-- Total: 106 tests, 354 assertions
-- Passed: 106
+- Total: 122 tests, 531 assertions
+- Passed: 122
 - Failed: 0
-- Errors: 0
-- Time: ~5.9s
+- Time: ~5.6s
 
 ## Results
 
 ### Passed
-All 106 tests passed. No failures or errors.
+All 122 tests passed. No failures.
 
 ### Failed
-None.
+_(none)_
 
 ## Raw output
 ```
-{"tool":"pest","result":"passed","tests":106,"passed":106,"assertions":354,"duration_ms":5892}
+{"tool":"pest","result":"passed","tests":122,"passed":122,"assertions":531,"duration_ms":5556}
 ```
