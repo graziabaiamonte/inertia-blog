@@ -89,13 +89,13 @@ export default function AdminPostsIndex({ posts, auth }: Props & PageProps) {
                                             </td>
                                             <td className="px-6 py-4 text-right text-sm">
                                                 <Link
-                                                    href={route('admin.posts.edit', post.id)}
+                                                    href={route('admin.posts.edit', post.slug)}
                                                     className="mr-3 text-indigo-600 hover:text-indigo-900"
                                                 >
                                                     Edit
                                                 </Link>
                                                 <Link
-                                                    href={route('admin.posts.destroy', post.id)}
+                                                    href={route('admin.posts.destroy', post.slug)}
                                                     method="delete"
                                                     as="button"
                                                     className="text-red-600 hover:text-red-900"

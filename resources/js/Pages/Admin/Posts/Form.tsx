@@ -64,7 +64,7 @@ export default function AdminPostForm({ post, categories, tags, statuses }: Prop
         });
 
         if (isEditing) {
-            submit(route('admin.posts.update', post!.id), {
+            submit(route('admin.posts.update', post!.slug), {
                 forceFormData: true,
             });
         } else {
@@ -132,7 +132,7 @@ export default function AdminPostForm({ post, categories, tags, statuses }: Prop
                                 {/* Featured image */}
                                 <div className="overflow-hidden rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
                                     <ImageUpload
-                                        postId={post?.id}
+                                        postSlug={post?.slug}
                                         currentUrl={post?.featured_image}
                                         label="Featured Image"
                                         error={errors.featured_image}

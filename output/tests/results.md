@@ -7,23 +7,20 @@
 Full suite — `./vendor/bin/sail artisan test`
 
 ## Summary
-- Total: 122 tests, 481 assertions
-- Passed: 122
+- Total: 131 tests, 498 assertions
+- Passed: 131
 - Failed: 0
-- Time: ~7.3s
+- Time: ~7.7s
 
 ## Results
 
 ### Passed
-All 122 tests passed. No failures.
+All 131 tests passed.
 
 ### Failed
-_(none)_
-
-## Changes Made to Test Files
-None required. The suite was fully green on the first run. No `/blog` path assertions or `Welcome` Inertia component references caused failures.
+None.
 
 ## Raw output
 ```
-{"tool":"pest","result":"passed","tests":122,"passed":122,"assertions":481,"duration_ms":7296}
+{"tool":"pest","result":"passed","tests":131,"passed":131,"assertions":498,"duration_ms":7669}
 ```

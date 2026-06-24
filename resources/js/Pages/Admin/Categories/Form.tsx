@@ -22,7 +22,7 @@ export default function AdminCategoryForm({ category }: Props & PageProps) {
     function handleSubmit(e: FormEvent) {
         e.preventDefault();
         if (isEditing) {
-            put(route('admin.categories.update', category!.id));
+            put(route('admin.categories.update', category!.slug));
         } else {
             post(route('admin.categories.store'));
         }

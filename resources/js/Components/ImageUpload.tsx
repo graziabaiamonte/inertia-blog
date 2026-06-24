@@ -4,7 +4,7 @@ import axios from '@/lib/axios';
 import { ChangeEvent, useState } from 'react';
 
 interface Props {
-    postId?: number;
+    postSlug?: string;
     currentUrl?: string | null;
     onUploaded?: (url: string) => void;
     label?: string;
@@ -13,7 +13,7 @@ interface Props {
 }
 
 export default function ImageUpload({
-    postId,
+    postSlug,
     currentUrl,
     onUploaded,
     label = 'Featured Image',
@@ -31,13 +31,13 @@ export default function ImageUpload({
         setPreview(URL.createObjectURL(file));
         onFileSelected?.(file);
 
-        if (postId) {
+        if (postSlug) {
             setUploading(true);
             setUploadError(null);
             try {
                 const form = new FormData();
                 form.append('featured_image', file);
-                const res = await axios.post(route('admin.posts.media.store', postId), form, {
+                const res = await axios.post(route('admin.posts.media.store', postSlug), form, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 });
                 onUploaded?.(res.data.url);
