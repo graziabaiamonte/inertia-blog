@@ -1,6 +1,12 @@
 <?php
 
+use Database\Seeders\RolePermissionSeeder;
 use Tests\TestCase;
+
+beforeEach(function () {
+    /** @var TestCase $this */
+    $this->seed(RolePermissionSeeder::class);
+});
 
 test('registration screen can be rendered', function () {
     /** @var TestCase $this */
