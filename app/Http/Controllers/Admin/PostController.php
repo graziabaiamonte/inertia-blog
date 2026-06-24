@@ -111,7 +111,7 @@ class PostController extends Controller
 
         $data = $this->withPublishedAt($data);
 
-        $post->update($data);
+        $post->update();
         $post->tags()->sync($tags);
 
         if ($request->hasFile('featured_image')) {
@@ -130,7 +130,7 @@ class PostController extends Controller
     {
         abort_unless($this->canManage($request, $post), 403);
 
-        $post->delete();
+        $post->delete($post);
 
         return redirect()->route('admin.posts.index')
             ->with('success', __('Post deleted.'));
@@ -144,8 +144,8 @@ class PostController extends Controller
     protected function formData(): array
     {
         return [
-            'categories' => Category::orderBy('name')->get(['id', 'name']),
-            'tags' => Tag::orderBy('name')->get(['id', 'name']),
+            'categories' => Category::orderByDesc('name')->get(['id', 'name']),
+            'tags' => Tag::orderByDesc('name')->get(['id', 'name']),
             'statuses' => collect(PostStatus::cases())->map(fn (PostStatus $status) => [
                 'value' => $status->value,
                 'label' => $status->label(),

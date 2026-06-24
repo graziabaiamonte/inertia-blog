@@ -14,9 +14,9 @@ export default function PublicLayout({ children }: PropsWithChildren) {
                     </Link>
 
                     <nav className="flex items-center gap-4 text-sm">
-                        <Link href={route('blog.index')} className="text-gray-600 hover:text-gray-900">
+                        {/* <Link href={route('blog.index')} className="text-gray-600 hover:text-gray-900">
                             Articles
-                        </Link>
+                        </Link> */}
 
                         {auth.user ? (
                             <Link

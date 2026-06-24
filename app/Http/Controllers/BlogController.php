@@ -47,8 +47,8 @@ class BlogController extends Controller
             'posts' => $posts->through(fn (Post $post) => $this->toListItem($post)),
             'filters' => $request->query('filter', []),
             'sort' => $request->query('sort'),
-            'categories' => Category::orderBy('name')->get(['name', 'slug']),
-            'tags' => Tag::orderBy('name')->get(['name', 'slug']),
+            'categories' => Category::orderByDesc('name')->get(['name', 'slug']),
+            'tags' => Tag::query()->orderByDesc('name')->get(['name', 'slug']),
         ]);
     }
 
