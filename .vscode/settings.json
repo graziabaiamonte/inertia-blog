@@ -1,0 +1,10 @@
+{
+    "postman.settings.dotenv-detection-notification-visibility": false,
+    "intelephense.diagnostics.typeErrors": false,
+    "intelephense.environment.includePaths": [
+        "_ide_helper.php",
+        "_ide_helper_models.php",
+        ".phpstorm.meta.php",
+        ".ide-stubs"
+    ]
+}

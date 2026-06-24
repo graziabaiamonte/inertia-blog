@@ -10,7 +10,6 @@ import { Category, PageProps, Tag } from '@/types';
 import type { AdminPostForm } from '@/types';
 import { PostStatus } from '@/types/enums';
 import { Head, useForm } from '@inertiajs/react';
-import { FormEvent } from 'react';
 
 interface StatusOption {
     value: PostStatus;
@@ -45,7 +44,7 @@ export default function AdminPostForm({ post, categories, tags, statuses }: Prop
         featured_image: null as File | null,
     });
 
-    function handleSubmit(e: FormEvent) {
+    function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
 
         transform(() => {

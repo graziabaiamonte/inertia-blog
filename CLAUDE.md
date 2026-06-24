@@ -42,6 +42,18 @@ Always delegate to these agents instead of acting directly:
 - **`tailwind-css-stylist`** — write, edit, review, or optimize Tailwind CSS classes in React components. Use for any visual/styling work: new component styling, `className` refactors, inline-style-to-Tailwind conversions, class-conflict audits, Flexbox/Grid layouts.
 - **`auto-commit`** — **MANDATORY after every completed task.** Invoke this agent (via the Agent tool with `subagent_type: "auto-commit"`) immediately after marking a task as `[x]` in `PLAN.md`. It stages all current changes and creates a git commit with a descriptive message that includes the phase and task number. Never skip this step.
 
+## IDE stubs (intelephense false positives)
+
+- PHP 8.6 polyfills (`symfony/polyfill-php86`) declare symbols like the global `SortDirection` enum
+  inside `if (\PHP_VERSION_ID < 80600)` blocks. Intelephense skips conditionally-declared symbols, so
+  it can't resolve them — e.g. Laravel 13's `orderBy($column, $direction = SortDirection::Ascending)`
+  triggers a phantom `P1005 — Not enough arguments. Expected 2. Found 1.` on every `orderBy('col')`.
+- Fix: keep an **unconditional** IDE-only stub for each such symbol in `.ide-stubs/` (never autoloaded
+  at runtime). The folder is wired into intelephense via `.vscode/settings.json`
+  (`intelephense.environment.includePaths` includes `.ide-stubs`). Both are committed so every clone
+  gets it. To fix a future polyfill symbol, drop one stub file into `.ide-stubs/` and reindex
+  (Command Palette → `Intelephense: Index workspace`). Do **not** edit app code to silence the IDE.
+
 ## Seed data
 
 - `DatabaseSeeder` must create a specific admin: **`grazia@gmail.com` / `passw`** (`Hash::make('passw')`), assigned the **`admin`** role — plus a couple of `author` users and sample posts/categories/tags/comments.
