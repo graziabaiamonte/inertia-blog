@@ -126,11 +126,11 @@ cross-cutting tooling listed below.
   - email **`grazia@gmail.com`**, password **`passw`** (`Hash::make('passw')` — bypasses the 8-char rule), `email_verified_at` set, assigned the **`admin`** role (`RoleName::Admin`).
   - plus a couple of `author`-role users for realistic data.
 - [x] Verify: `./vendor/bin/sail artisan migrate:fresh --seed` succeeds.
-- **Tests (Phase 2):**
-  - `PostStatusEnumTest` / casts: a saved post returns a `PostStatus` instance; default is `Draft`.
-  - `RolePermissionSeederTest`: expected roles + permissions exist and are linked.
-  - `DatabaseSeederTest`: `grazia@gmail.com` exists, has the `admin` role, and `Hash::check('passw', ...)` passes.
-  - Model relationship/scope tests (`published()`, `approved()`, slug auto-gen).
+- **Tests (Phase 2):** ✅ 21/21 passing; full suite green (46/46).
+  - [x] `PostStatusEnumTest` / casts: a saved post returns a `PostStatus` instance; default is `Draft`.
+  - [x] `RolePermissionSeederTest`: expected roles + permissions exist and are linked.
+  - [x] `DatabaseSeederTest`: `grazia@gmail.com` exists, has the `admin` role, and `Hash::check('passw', ...)` passes.
+  - [x] Model relationship/scope tests (`published()`, `approved()`, slug auto-gen).
 
 ---
 
