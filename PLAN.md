@@ -120,12 +120,12 @@ cross-cutting tooling listed below.
 
 ### 2.4 Factories & seeders (`database/factories/`, `database/seeders/`)
 
-- [ ] Factories for `Post`, `Category`, `Tag`, `Comment` (Post factory uses `PostStatus` cases).
-- [ ] `RolePermissionSeeder`: create roles/permissions from the `RoleName` / `PermissionName` enums; assign permissions to each role.
-- [ ] `DatabaseSeeder`: seed users, taxonomy, ~10 published posts (each with a featured image via medialibrary) + comments. **Must include the specific admin account:**
+- [x] Factories for `Post`, `Category`, `Tag`, `Comment` (Post factory uses `PostStatus` cases).
+- [x] `RolePermissionSeeder`: create roles/permissions from the `RoleName` / `PermissionName` enums; assign permissions to each role.
+- [x] `DatabaseSeeder`: seed users, taxonomy, ~10 published posts (each with a featured image via medialibrary) + comments. **Must include the specific admin account:**
   - email **`grazia@gmail.com`**, password **`passw`** (`Hash::make('passw')` — bypasses the 8-char rule), `email_verified_at` set, assigned the **`admin`** role (`RoleName::Admin`).
   - plus a couple of `author`-role users for realistic data.
-- [ ] Verify: `./vendor/bin/sail artisan migrate:fresh --seed` succeeds.
+- [x] Verify: `./vendor/bin/sail artisan migrate:fresh --seed` succeeds.
 - **Tests (Phase 2):**
   - `PostStatusEnumTest` / casts: a saved post returns a `PostStatus` instance; default is `Draft`.
   - `RolePermissionSeederTest`: expected roles + permissions exist and are linked.
