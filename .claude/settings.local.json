@@ -9,7 +9,10 @@
       "Bash(mkdir -p app/Enums)",
       "Bash(php -v)",
       "Bash(./vendor/bin/sail artisan *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(./vendor/bin/sail tinker '--execute= *)",
+      "Bash(./vendor/bin/sail pint *)"
     ]
   }
 }

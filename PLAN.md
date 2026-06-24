@@ -114,9 +114,9 @@ cross-cutting tooling listed below.
 
 ### 2.3 Models (`app/Models/`)
 
-- [ ] `User`: `use HasRoles`; `hasMany Post`; implements `MustVerifyEmail`.
-- [ ] `Post`: implements `HasMedia`, `use InteractsWithMedia`; `belongsTo User`, `belongsTo Category`, `belongsToMany Tag`, `hasMany Comment`; `published()` scope; `casts: ['status' => PostStatus::class, 'published_at' => 'datetime']`; slug auto-gen in a `saving` hook; route-model binding by `slug`. Register media collections `MediaCollection::Featured` (single file) + `MediaCollection::Content`, with a thumb conversion.
-- [ ] `Category`: `hasMany Post`; slug auto-gen. `Tag`: `belongsToMany Post`; slug auto-gen. `Comment`: `belongsTo Post`; `approved()` scope.
+- [x] `User`: `use HasRoles`; `hasMany Post`; implements `MustVerifyEmail`.
+- [x] `Post`: implements `HasMedia`, `use InteractsWithMedia`; `belongsTo User`, `belongsTo Category`, `belongsToMany Tag`, `hasMany Comment`; `published()` scope; `casts: ['status' => PostStatus::class, 'published_at' => 'datetime']`; slug auto-gen in a `saving` hook; route-model binding by `slug`. Register media collections `MediaCollection::Featured` (single file) + `MediaCollection::Content`, with a thumb conversion.
+- [x] `Category`: `hasMany Post`; slug auto-gen. `Tag`: `belongsToMany Post`; slug auto-gen. `Comment`: `belongsTo Post`; `approved()` scope.
 
 ### 2.4 Factories & seeders (`database/factories/`, `database/seeders/`)
 
