@@ -18,11 +18,7 @@ export default function PostCard({ post }: Props) {
         <article className="flex flex-col overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition hover:shadow-md">
             {post.featured_image && (
                 <Link href={route('blog.show', post.slug)}>
-                    <img
-                        src={post.featured_image}
-                        alt={post.title}
-                        className="h-48 w-full object-cover"
-                    />
+                    <img src={post.featured_image} alt={post.title} className="h-48 w-full object-cover" />
                 </Link>
             )}
 
@@ -39,19 +35,12 @@ export default function PostCard({ post }: Props) {
                 )}
 
                 <h2 className="mb-2 text-lg font-semibold text-gray-900">
-                    <Link
-                        href={route('blog.show', post.slug)}
-                        className="hover:text-indigo-600"
-                    >
+                    <Link href={route('blog.show', post.slug)} className="hover:text-indigo-600">
                         {post.title}
                     </Link>
                 </h2>
 
-                {post.excerpt && (
-                    <p className="mb-4 flex-1 text-sm text-gray-600 line-clamp-3">
-                        {post.excerpt}
-                    </p>
-                )}
+                {post.excerpt && <p className="mb-4 line-clamp-3 flex-1 text-sm text-gray-600">{post.excerpt}</p>}
 
                 <div className="mt-auto flex items-center justify-between text-xs text-gray-500">
                     <span>{post.author}</span>

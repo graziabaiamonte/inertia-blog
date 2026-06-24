@@ -43,9 +43,7 @@ export default function BlogShow({ post }: Props & PageProps) {
                     </Link>
                 )}
 
-                <h1 className="mb-4 text-3xl font-bold leading-tight text-gray-900 sm:text-4xl">
-                    {post.title}
-                </h1>
+                <h1 className="mb-4 text-3xl font-bold leading-tight text-gray-900 sm:text-4xl">{post.title}</h1>
 
                 <div className="mb-6 flex items-center gap-3 text-sm text-gray-500">
                     {post.author && <span>{post.author}</span>}
@@ -68,10 +66,7 @@ export default function BlogShow({ post }: Props & PageProps) {
                 )}
 
                 {/* Post body — server-sanitized HTML */}
-                <div
-                    className="prose prose-indigo max-w-none"
-                    dangerouslySetInnerHTML={{ __html: post.body_html }}
-                />
+                <div className="prose prose-indigo max-w-none" dangerouslySetInnerHTML={{ __html: post.body_html }} />
 
                 {/* Tags */}
                 {post.tags.length > 0 && (
@@ -94,9 +89,7 @@ export default function BlogShow({ post }: Props & PageProps) {
 
                 {/* Comments */}
                 <section>
-                    <h2 className="mb-6 text-xl font-semibold text-gray-900">
-                        Comments ({post.comments.length})
-                    </h2>
+                    <h2 className="mb-6 text-xl font-semibold text-gray-900">Comments ({post.comments.length})</h2>
                     <CommentList comments={post.comments} />
 
                     <div className="mt-10">

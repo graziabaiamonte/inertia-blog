@@ -11,9 +11,7 @@ export default function AdminCategoriesIndex({ categories }: Props & PageProps) 
         <AuthenticatedLayout
             header={
                 <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                        Categories
-                    </h2>
+                    <h2 className="text-xl font-semibold leading-tight text-gray-800">Categories</h2>
                     <Link
                         href={route('admin.categories.create')}
                         className="rounded-md bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700"
@@ -53,15 +51,9 @@ export default function AdminCategoriesIndex({ categories }: Props & PageProps) 
                                 <tbody className="divide-y divide-gray-200 bg-white">
                                     {categories.map((cat) => (
                                         <tr key={cat.id} className="hover:bg-gray-50">
-                                            <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                                                {cat.name}
-                                            </td>
-                                            <td className="px-6 py-4 font-mono text-sm text-gray-500">
-                                                {cat.slug}
-                                            </td>
-                                            <td className="px-6 py-4 text-sm text-gray-500">
-                                                {cat.posts_count ?? 0}
-                                            </td>
+                                            <td className="px-6 py-4 text-sm font-medium text-gray-900">{cat.name}</td>
+                                            <td className="px-6 py-4 font-mono text-sm text-gray-500">{cat.slug}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-500">{cat.posts_count ?? 0}</td>
                                             <td className="px-6 py-4 text-right text-sm">
                                                 <Link
                                                     href={route('admin.categories.edit', cat.id)}

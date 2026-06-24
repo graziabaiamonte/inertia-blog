@@ -14,9 +14,7 @@ export default function AdminPostsIndex({ posts, auth }: Props & PageProps) {
         <AuthenticatedLayout
             header={
                 <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                        Posts
-                    </h2>
+                    <h2 className="text-xl font-semibold leading-tight text-gray-800">Posts</h2>
                     <Link
                         href={route('admin.posts.create')}
                         className="rounded-md bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700"
@@ -57,9 +55,7 @@ export default function AdminPostsIndex({ posts, auth }: Props & PageProps) {
                                             Published
                                         </th>
                                         <th className="relative px-6 py-3">
-                                            <span className="sr-only">
-                                                Actions
-                                            </span>
+                                            <span className="sr-only">Actions</span>
                                         </th>
                                     </tr>
                                 </thead>
@@ -74,9 +70,7 @@ export default function AdminPostsIndex({ posts, auth }: Props & PageProps) {
                                                     {post.author ?? '—'}
                                                 </td>
                                             )}
-                                            <td className="px-6 py-4 text-sm text-gray-500">
-                                                {post.category ?? '—'}
-                                            </td>
+                                            <td className="px-6 py-4 text-sm text-gray-500">{post.category ?? '—'}</td>
                                             <td className="px-6 py-4">
                                                 <span
                                                     className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${

@@ -8,19 +8,22 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 #[Fillable(['post_id', 'author_name', 'author_email', 'body', 'approved'])]
 /**
  * @method static \Illuminate\Database\Eloquent\Builder<static> approved()
+ *
  * @property int $id
  * @property int $post_id
  * @property string $author_name
  * @property string $author_email
  * @property string $body
  * @property bool $approved
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Post $post
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Post $post
+ *
  * @method static \Database\Factories\CommentFactory factory($count = null, $state = [])
  * @method static Builder<static>|Comment newModelQuery()
  * @method static Builder<static>|Comment newQuery()
@@ -33,6 +36,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static Builder<static>|Comment whereId($value)
  * @method static Builder<static>|Comment wherePostId($value)
  * @method static Builder<static>|Comment whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  * @mixin IdeHelperComment
  */

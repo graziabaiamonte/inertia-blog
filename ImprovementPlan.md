@@ -17,6 +17,7 @@ This document is written to be executed task-by-task by an implementation agent.
 - **Type-check / build the frontend** after frontend changes: `./vendor/bin/sail npm run build` (must succeed with no TypeScript errors).
 - **Conventions** (from CLAUDE.md): Form Requests for all writes (no inline `$request->validate()`); authorization via spatie permissions; PHP backed enums mirrored as TS unions in `resources/js/types/enums.ts`; markdown rendered server-side.
 - **Definition of done for each task**: code changed + style clean + frontend builds + relevant tests green (via `test-runner`) + committed (via `auto-commit`).
+- **Flag every completed task**: immediately after a task is finished, mark its checkbox in this file from `[ ]` to `[x]`. Do this before moving on to the next task. Never leave a completed task unmarked.
 
 ### Recommended execution order
 Execute **Phase 1 (Inertia v3 upgrade) first**, because it changes the framework foundation; validating later features against v3 avoids rework. Phases 2–4 are largely independent of each other and can follow in order.
@@ -36,7 +37,7 @@ Execute **Phase 1 (Inertia v3 upgrade) first**, because it changes the framework
 
 > Tip: do this work on a clean git tree so it can be reverted easily if the build breaks.
 
-### [ ] Task 1.1 — Upgrade server-side adapter (Composer)
+### [x] Task 1.1 — Upgrade server-side adapter (Composer)
 - Run:
   ```bash
   ./vendor/bin/sail composer require "inertiajs/inertia-laravel:^3.0" -W
@@ -44,7 +45,7 @@ Execute **Phase 1 (Inertia v3 upgrade) first**, because it changes the framework
   (`-W` lets dependencies adjust if needed.)
 - **Verify:** `./vendor/bin/sail composer show inertiajs/inertia-laravel` reports a `3.x` version. No composer errors.
 
-### [ ] Task 1.2 — Upgrade React to 19 + Inertia React adapter (npm)
+### [x] Task 1.2 — Upgrade React to 19 + Inertia React adapter (npm)
 - Run (single install is fine):
   ```bash
   ./vendor/bin/sail npm install react@^19 react-dom@^19 @inertiajs/react@^3.0
@@ -56,7 +57,7 @@ Execute **Phase 1 (Inertia v3 upgrade) first**, because it changes the framework
   ```
 - **Verify:** `package.json` shows `react`/`react-dom` at `^19`, `@inertiajs/react` at `^3`, `axios` present. `./vendor/bin/sail npm install` completes with no peer-dependency errors.
 
-### [ ] Task 1.3 — Republish Inertia config and clear views
+### [x] Task 1.3 — Republish Inertia config and clear views
 - Run:
   ```bash
   ./vendor/bin/sail artisan vendor:publish --provider="Inertia\\ServiceProvider" --force
@@ -66,7 +67,7 @@ Execute **Phase 1 (Inertia v3 upgrade) first**, because it changes the framework
 - This creates/updates `config/inertia.php` with the new v3 structure (a `pages` namespace + a `testing` section). There were no custom Inertia config values before, so no customizations need re-applying.
 - **Verify:** `config/inertia.php` exists and contains a `'pages'` key.
 
-### [ ] Task 1.4 — Update the root Blade template title attribute
+### [x] Task 1.4 — Update the root Blade template title attribute
 - **File:** `resources/views/app.blade.php`, line 7.
 - **Before:**
   ```blade
@@ -79,7 +80,7 @@ Execute **Phase 1 (Inertia v3 upgrade) first**, because it changes the framework
 - Leave `@routes`, `@viteReactRefresh`, `@vite(...)`, `@inertiaHead`, and `@inertia` unchanged (the directive form is still supported in v3).
 - **Verify:** the file compiles; the homepage still renders a `<title>`.
 
-### [ ] Task 1.5 — Keep the existing page resolver (verify it still works under v3)
+### [x] Task 1.5 — Keep the existing page resolver (verify it still works under v3)
 - **File:** `resources/js/app.tsx`. The current setup uses `resolvePageComponent` from `laravel-vite-plugin/inertia-helpers` and `createInertiaApp({ resolve, setup, ... })`. This pattern is still valid in v3 — **do not rewrite it unless the build fails**.
 - There is **no** `future` block, no `router.on('invalid'|'exception')`, no `router.cancel()`, no progress imports in this project, so nothing to migrate here.
 - Adopting the new optional `@inertiajs/vite` plugin and SSR is **out of scope** for this phase (the app currently has no SSR). Do not add it.
@@ -95,15 +96,15 @@ Execute **Phase 1 (Inertia v3 upgrade) first**, because it changes the framework
   },
   ```
 
-### [ ] Task 1.6 — Runtime smoke test
+### [x] Task 1.6 — Runtime smoke test
 - Ensure dev server runs: `./vendor/bin/sail npm run dev` (and `./vendor/bin/sail up -d`).
 - Manually load `/` and `/login`; both must render without a JS console error and without an Inertia error modal.
 - **Verify:** pages render; navigation between pages works (Inertia client is functioning).
 
-### [ ] Task 1.7 — Tests
+### [x] Task 1.7 — Tests
 - Delegate the **full suite** to the **`test-runner`** agent. All tests must pass. Inertia assertion helpers (`assertInertia`, `Inertia\Testing\AssertableInertia`) are compatible with v3; if any test references a removed v2 API, fix it minimally.
 
-### [ ] Task 1.8 — Style + commit
+### [x] Task 1.8 — Style + commit
 - Run Pint and Prettier; then invoke **`auto-commit`**.
 
 ---

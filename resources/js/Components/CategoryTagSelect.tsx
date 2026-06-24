@@ -62,14 +62,10 @@ export default function CategoryTagSelect(props: Props) {
                         </button>
                     ))}
                     {options.length === 0 && (
-                        <span className="text-sm text-gray-400">
-                            No {label.toLowerCase()} available.
-                        </span>
+                        <span className="text-sm text-gray-400">No {label.toLowerCase()} available.</span>
                     )}
                 </div>
-                {error && (
-                    <p className="mt-1 text-sm text-red-600">{error}</p>
-                )}
+                {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
             </div>
         );
     }
@@ -80,11 +76,7 @@ export default function CategoryTagSelect(props: Props) {
             <select
                 id={id}
                 value={props.value ?? ''}
-                onChange={(e) =>
-                    props.onChange(
-                        e.target.value ? Number(e.target.value) : null,
-                    )
-                }
+                onChange={(e) => props.onChange(e.target.value ? Number(e.target.value) : null)}
                 className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
             >
                 <option value="">{placeholder ?? `— Select ${label} —`}</option>

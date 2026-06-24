@@ -24,15 +24,17 @@ interface Props {
     statuses: StatusOption[];
 }
 
-export default function AdminPostForm({
-    post,
-    categories,
-    tags,
-    statuses,
-}: Props & PageProps) {
+export default function AdminPostForm({ post, categories, tags, statuses }: Props & PageProps) {
     const isEditing = !!post;
 
-    const { data, setData, post: submit, transform, processing, errors } = useForm({
+    const {
+        data,
+        setData,
+        post: submit,
+        transform,
+        processing,
+        errors,
+    } = useForm({
         title: post?.title ?? '',
         excerpt: post?.excerpt ?? '',
         body: post?.body ?? '',
@@ -51,14 +53,11 @@ export default function AdminPostForm({
             formData.append('title', data.title);
             formData.append('excerpt', data.excerpt);
             formData.append('body', data.body);
-            if (data.category_id !== null)
-                formData.append('category_id', String(data.category_id));
+            if (data.category_id !== null) formData.append('category_id', String(data.category_id));
             formData.append('status', data.status);
-            if (data.published_at)
-                formData.append('published_at', data.published_at);
+            if (data.published_at) formData.append('published_at', data.published_at);
             data.tags.forEach((id) => formData.append('tags[]', String(id)));
-            if (data.featured_image)
-                formData.append('featured_image', data.featured_image);
+            if (data.featured_image) formData.append('featured_image', data.featured_image);
             if (isEditing) formData.append('_method', 'PUT');
 
             return formData;
@@ -96,37 +95,24 @@ export default function AdminPostForm({
                                     <TextInput
                                         id="title"
                                         value={data.title}
-                                        onChange={(e) =>
-                                            setData('title', e.target.value)
-                                        }
+                                        onChange={(e) => setData('title', e.target.value)}
                                         className="mt-1 w-full"
                                         required
                                     />
-                                    <InputError
-                                        message={errors.title}
-                                        className="mt-1"
-                                    />
+                                    <InputError message={errors.title} className="mt-1" />
                                 </div>
 
                                 {/* Excerpt */}
                                 <div>
-                                    <InputLabel
-                                        htmlFor="excerpt"
-                                        value="Excerpt (optional)"
-                                    />
+                                    <InputLabel htmlFor="excerpt" value="Excerpt (optional)" />
                                     <textarea
                                         id="excerpt"
                                         value={data.excerpt}
-                                        onChange={(e) =>
-                                            setData('excerpt', e.target.value)
-                                        }
+                                        onChange={(e) => setData('excerpt', e.target.value)}
                                         rows={2}
                                         className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     />
-                                    <InputError
-                                        message={errors.excerpt}
-                                        className="mt-1"
-                                    />
+                                    <InputError message={errors.excerpt} className="mt-1" />
                                 </div>
 
                                 {/* Body — Markdown editor */}
@@ -150,9 +136,7 @@ export default function AdminPostForm({
                                         currentUrl={post?.featured_image}
                                         label="Featured Image"
                                         error={errors.featured_image}
-                                        onFileSelected={(file) =>
-                                            setData('featured_image', file)
-                                        }
+                                        onFileSelected={(file) => setData('featured_image', file)}
                                     />
                                 </div>
 
@@ -174,57 +158,32 @@ export default function AdminPostForm({
                                 {/* Status */}
                                 <div className="overflow-hidden rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
                                     <div>
-                                        <InputLabel
-                                            htmlFor="status"
-                                            value="Status"
-                                        />
+                                        <InputLabel htmlFor="status" value="Status" />
                                         <select
                                             id="status"
                                             value={data.status}
-                                            onChange={(e) =>
-                                                setData(
-                                                    'status',
-                                                    e.target.value as PostStatus,
-                                                )
-                                            }
+                                            onChange={(e) => setData('status', e.target.value as PostStatus)}
                                             className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                         >
                                             {statuses.map((s) => (
-                                                <option
-                                                    key={s.value}
-                                                    value={s.value}
-                                                >
+                                                <option key={s.value} value={s.value}>
                                                     {s.label}
                                                 </option>
                                             ))}
                                         </select>
-                                        <InputError
-                                            message={errors.status}
-                                            className="mt-1"
-                                        />
+                                        <InputError message={errors.status} className="mt-1" />
                                     </div>
 
                                     <div className="mt-4">
-                                        <InputLabel
-                                            htmlFor="published_at"
-                                            value="Publish date (optional)"
-                                        />
+                                        <InputLabel htmlFor="published_at" value="Publish date (optional)" />
                                         <input
                                             type="datetime-local"
                                             id="published_at"
                                             value={data.published_at}
-                                            onChange={(e) =>
-                                                setData(
-                                                    'published_at',
-                                                    e.target.value,
-                                                )
-                                            }
+                                            onChange={(e) => setData('published_at', e.target.value)}
                                             className="mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                         />
-                                        <InputError
-                                            message={errors.published_at}
-                                            className="mt-1"
-                                        />
+                                        <InputError message={errors.published_at} className="mt-1" />
                                     </div>
                                 </div>
 
@@ -235,23 +194,14 @@ export default function AdminPostForm({
                                         label="Category"
                                         options={categories}
                                         value={data.category_id}
-                                        onChange={(v) =>
-                                            setData('category_id', v)
-                                        }
+                                        onChange={(v) => setData('category_id', v)}
                                         placeholder="— No category —"
                                         error={errors.category_id}
                                     />
                                 </div>
 
-                                <PrimaryButton
-                                    className="w-full justify-center"
-                                    disabled={processing}
-                                >
-                                    {processing
-                                        ? 'Saving…'
-                                        : isEditing
-                                          ? 'Update Post'
-                                          : 'Create Post'}
+                                <PrimaryButton className="w-full justify-center" disabled={processing}>
+                                    {processing ? 'Saving…' : isEditing ? 'Update Post' : 'Create Post'}
                                 </PrimaryButton>
                             </div>
                         </div>
