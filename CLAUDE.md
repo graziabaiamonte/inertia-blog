@@ -30,7 +30,17 @@ See `PLAN.md` for the full phased implementation plan.
 - **HTTP (frontend):** use **Axios** for direct HTTP/JSON calls (e.g. the media upload endpoint) via a configured instance at `resources/js/lib/axios.ts`. Inertia `useForm` for normal form posts.
 - **Code style:** keep **Pint** (`pint.json`) and **Prettier** (`.prettierrc`, with `prettier-plugin-tailwindcss`) clean — run `./vendor/bin/sail pint` and the Prettier format script.
 - **Tests:** write **feature/unit tests for every feature** (**Pest** — install Breeze with `--pest`). Keep `./vendor/bin/sail artisan test` green. Run the suite after each feature. Cluster tests into per-phase dirs (`tests/Feature/Phase{2..5}/`, `tests/Feature/Setup/`, `tests/Unit/Enums/`).
+  - **IMPORTANT:** Always delegate test execution to the **`test-runner`** agent (via the Agent tool with `subagent_type: "test-runner"`). Never run tests directly — always use the test-runner agent.
 - **Content:** post body is Markdown, rendered server-side to **sanitized** HTML via `league/commonmark` (avoid raw `dangerouslySetInnerHTML`).
+
+## Specialized agents (`.claude/agents/`)
+
+Always delegate to these agents instead of acting directly:
+
+- **`test-runner`** — run, debug, or interpret the Pest test suite. Use whenever you need to execute tests (full suite, a specific directory, or a single test), diagnose failures, or read test results. Never run `./vendor/bin/sail artisan test` yourself; always delegate to this agent.
+- **`translation-sync`** — check or fix translation sync between `lang/en.json` and `lang/it.json`. Use whenever you add new translation keys, suspect a locale is out of sync, or need a sync report written to `output/translations/sync-report.md`.
+- **`tailwind-css-stylist`** — write, edit, review, or optimize Tailwind CSS classes in React components. Use for any visual/styling work: new component styling, `className` refactors, inline-style-to-Tailwind conversions, class-conflict audits, Flexbox/Grid layouts.
+- **`auto-commit`** — **MANDATORY after every completed task.** Invoke this agent (via the Agent tool with `subagent_type: "auto-commit"`) immediately after marking a task as `[x]` in `PLAN.md`. It stages all current changes and creates a git commit with a descriptive message that includes the phase and task number. Never skip this step.
 
 ## Seed data
 
