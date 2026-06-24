@@ -7,61 +7,18 @@ use App\Enums\PostStatus;
 use Database\Factories\PostFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 #[Fillable(['user_id', 'category_id', 'title', 'slug', 'excerpt', 'body', 'status', 'published_at'])]
-/**
- * @method static \Illuminate\Database\Eloquent\Builder<static> published()
- *
- * @property int $id
- * @property int $user_id
- * @property int|null $category_id
- * @property string $title
- * @property string $slug
- * @property string|null $excerpt
- * @property string $body
- * @property PostStatus $status
- * @property Carbon|null $published_at
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property-read Category|null $category
- * @property-read Collection<int, Comment> $comments
- * @property-read int|null $comments_count
- * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, Media> $media
- * @property-read int|null $media_count
- * @property-read Collection<int, Tag> $tags
- * @property-read int|null $tags_count
- * @property-read User $user
- *
- * @method static \Database\Factories\PostFactory factory($count = null, $state = [])
- * @method static Builder<static>|Post newModelQuery()
- * @method static Builder<static>|Post newQuery()
- * @method static Builder<static>|Post query()
- * @method static Builder<static>|Post whereBody($value)
- * @method static Builder<static>|Post whereCategoryId($value)
- * @method static Builder<static>|Post whereCreatedAt($value)
- * @method static Builder<static>|Post whereExcerpt($value)
- * @method static Builder<static>|Post whereId($value)
- * @method static Builder<static>|Post wherePublishedAt($value)
- * @method static Builder<static>|Post whereSlug($value)
- * @method static Builder<static>|Post whereStatus($value)
- * @method static Builder<static>|Post whereTitle($value)
- * @method static Builder<static>|Post whereUpdatedAt($value)
- * @method static Builder<static>|Post whereUserId($value)
- *
- * @mixin \Eloquent
- * @mixin IdeHelperPost
- */
+
 class Post extends Model implements HasMedia
 {
     /** @use HasFactory<PostFactory> */

@@ -1,3 +1,4 @@
+import LocaleSwitcher from '@/Components/LocaleSwitcher';
 import { Link, usePage } from '@inertiajs/react';
 import { PropsWithChildren } from 'react';
 import { PageProps } from '@/types';
@@ -14,9 +15,7 @@ export default function PublicLayout({ children }: PropsWithChildren) {
                     </Link>
 
                     <nav className="flex items-center gap-4 text-sm">
-                        {/* <Link href={route('blog.index')} className="text-gray-600 hover:text-gray-900">
-                            Articles
-                        </Link> */}
+                        <LocaleSwitcher />
 
                         {auth.user ? (
                             <Link

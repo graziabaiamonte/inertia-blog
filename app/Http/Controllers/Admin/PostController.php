@@ -111,7 +111,7 @@ class PostController extends Controller
 
         $data = $this->withPublishedAt($data);
 
-        $post->update();
+        $post->update($data);
         $post->tags()->sync($tags);
 
         if ($request->hasFile('featured_image')) {

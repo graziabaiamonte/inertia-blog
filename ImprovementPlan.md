@@ -233,14 +233,14 @@ For each file below, change the route parameter from `.id` to `.slug`.
 
 Supported locales: **`en`**, **`it`**.
 
-### [ ] Task 4.1 — Persist the chosen locale (middleware)
+### [x] Task 4.1 — Persist the chosen locale (middleware)
 - Create middleware `app/Http/Middleware/SetLocale.php`:
   - Read the chosen locale from the session: `session('locale')`.
   - If it is one of the supported locales (`en`, `it`), call `app()->setLocale($locale)`.
 - Register it in the `web` middleware group **before** `HandleInertiaRequests` (in `bootstrap/app.php` via `->withMiddleware(...)`, appending to the `web` group), so the `locale`/`translations` shared by `HandleInertiaRequests` reflect the active locale on the same request.
 - Define the supported-locale list in **one** reusable place (e.g. a `config('app.supported_locales')` entry, or a small constant/enum) so the middleware and the Form Request below share it.
 
-### [ ] Task 4.2 — Locale-switch route + Form Request
+### [x] Task 4.2 — Locale-switch route + Form Request
 - Add a public route in `routes/web.php` (it must be reachable by guests too; place it near the top with the other non-wildcard routes, **not** below the `/{post:slug}` wildcard):
   ```php
   Route::post('/locale', [LocaleController::class, 'update'])->name('locale.update');
@@ -249,7 +249,7 @@ Supported locales: **`en`**, **`it`**.
 - Create a Form Request (e.g. `app/Http/Requests/UpdateLocaleRequest.php`) — **no inline `$request->validate()`** (project convention). Rules: `locale` is `required` and `Rule::in(['en','it'])` (reuse the shared supported-locale list). `authorize()` returns `true` (public).
 - In `update`: store the validated locale in the session (`$request->session()->put('locale', $validated['locale'])`) and `return back()`.
 
-### [ ] Task 4.3 — LocaleSwitcher component
+### [x] Task 4.3 — LocaleSwitcher component
 - Create `resources/js/Components/LocaleSwitcher.tsx`:
   - Read the current locale from Inertia shared props: `usePage().props.locale`.
   - Render the available locales (EN / IT) as buttons (or a small dropdown), highlighting the active one.
@@ -257,21 +257,21 @@ Supported locales: **`en`**, **`it`**.
   - Use the `t()` helper for any visible label (e.g. an accessible "Language" label).
 - For styling, delegate to the **`tailwind-css-stylist`** agent (compact, fits the existing navbar style).
 
-### [ ] Task 4.4 — Add the switcher to both navbars
+### [x] Task 4.4 — Add the switcher to both navbars
 - Insert `<LocaleSwitcher />` into:
   - `resources/js/Layouts/PublicLayout.tsx` (public navbar, around the existing `<nav>` block).
   - `resources/js/Layouts/AuthenticatedLayout.tsx` (logged-in navbar).
 - This makes it available on every page (public and authenticated).
 
-### [ ] Task 4.5 — Translation keys + sync
+### [x] Task 4.5 — Translation keys + sync
 - Add any new UI keys (e.g. `"Language"`) to **both** `lang/en.json` and `lang/it.json`.
 - Delegate a sync check to the **`translation-sync`** agent (it writes a report to `output/translations/sync-report.md`); resolve any missing/empty keys.
 
-### [ ] Task 4.6 — Tests
+### [x] Task 4.6 — Tests
 - Feature test: `POST /locale` with `it` then `en` updates the session and the Inertia-shared `locale` prop reflects the change; an invalid locale (e.g. `de`) is rejected (validation error / 422). Optionally assert that a translated string changes between locales.
 - Delegate to **`test-runner`**; suite must be green.
 
-### [ ] Task 4.7 — Build + style + commit
+### [x] Task 4.7 — Build + style + commit
 - `./vendor/bin/sail npm run build`; Pint + Prettier; then **`auto-commit`**.
 
 ---

@@ -1,5 +1,6 @@
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
+import LocaleSwitcher from '@/Components/LocaleSwitcher';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { PageProps } from '@/types';
@@ -57,7 +58,8 @@ export default function Authenticated({ header, children }: PropsWithChildren<{ 
                             </div>
                         </div>
 
-                        <div className="hidden sm:ms-6 sm:flex sm:items-center">
+                        <div className="hidden gap-3 sm:ms-6 sm:flex sm:items-center">
+                            <LocaleSwitcher />
                             <div className="relative ms-3">
                                 <Dropdown>
                                     <Dropdown.Trigger>
@@ -150,6 +152,10 @@ export default function Authenticated({ header, children }: PropsWithChildren<{ 
                                 </ResponsiveNavLink>
                             </>
                         )}
+                    </div>
+
+                    <div className="px-4 py-2">
+                        <LocaleSwitcher />
                     </div>
 
                     <div className="border-t border-gray-200 pb-1 pt-4">
