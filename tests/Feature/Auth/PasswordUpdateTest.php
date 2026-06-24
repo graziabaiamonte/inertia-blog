@@ -2,8 +2,10 @@
 
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Tests\TestCase;
 
 test('password can be updated', function () {
+    /** @var TestCase $this */
     $user = User::factory()->create();
 
     $response = $this
@@ -23,6 +25,7 @@ test('password can be updated', function () {
 });
 
 test('correct password must be provided to update password', function () {
+    /** @var TestCase $this */
     $user = User::factory()->create();
 
     $response = $this

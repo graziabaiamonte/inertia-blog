@@ -5,8 +5,10 @@ use App\Enums\RoleName;
 use Database\Seeders\RolePermissionSeeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 beforeEach(function () {
+    /** @var TestCase $this */
     $this->seed(RolePermissionSeeder::class);
 });
 

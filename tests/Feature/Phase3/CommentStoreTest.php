@@ -1,8 +1,10 @@
 <?php
 
 use App\Models\Post;
+use Tests\TestCase;
 
 it('stores a guest comment as unapproved', function () {
+    /** @var TestCase $this */
     $post = Post::factory()->published()->create();
 
     $this->post(route('comments.store', $post), [
@@ -19,6 +21,7 @@ it('stores a guest comment as unapproved', function () {
 });
 
 it('rejects a comment with missing fields', function () {
+    /** @var TestCase $this */
     $post = Post::factory()->published()->create();
 
     $this->post(route('comments.store', $post), [
@@ -31,6 +34,7 @@ it('rejects a comment with missing fields', function () {
 });
 
 it('does not allow commenting on a draft post', function () {
+    /** @var TestCase $this */
     $post = Post::factory()->draft()->create();
 
     $this->post(route('comments.store', $post), [

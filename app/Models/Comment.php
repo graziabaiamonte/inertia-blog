@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['post_id', 'author_name', 'author_email', 'body', 'approved'])]
 /**
  * @method static \Illuminate\Database\Eloquent\Builder<static> approved()
+ *
+ * @mixin IdeHelperComment
  */
 class Comment extends Model
 {

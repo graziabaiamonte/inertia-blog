@@ -1,5 +1,12 @@
 <?php
 
+use App\Enums\PermissionName;
+use App\Enums\RoleName;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CommentController as AdminCommentController;
+use App\Http\Controllers\Admin\MediaController;
+use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ProfileController;
@@ -30,5 +37,32 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// Admin / author area
+Route::middleware(['auth', 'verified'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        // Posts — authors manage their own, admins manage all (enforced in requests).
+        $authorOrAdmin = 'role:'.RoleName::Admin->value.'|'.RoleName::Author->value;
+
+        Route::middleware($authorOrAdmin)->group(function () {
+            Route::resource('posts', PostController::class)->except('show');
+            Route::post('posts/{post}/media', [MediaController::class, 'store'])->name('posts.media.store');
+        });
+
+        // Taxonomy — admins only.
+        Route::middleware('permission:'.PermissionName::ManageTaxonomy->value)->group(function () {
+            Route::resource('categories', CategoryController::class)->except('show');
+            Route::resource('tags', TagController::class)->except('show');
+        });
+
+        // Comment moderation — admins only.
+        Route::middleware('permission:'.PermissionName::ModerateComments->value)->group(function () {
+            Route::get('comments', [AdminCommentController::class, 'index'])->name('comments.index');
+            Route::patch('comments/{comment}/approve', [AdminCommentController::class, 'approve'])->name('comments.approve');
+            Route::delete('comments/{comment}', [AdminCommentController::class, 'destroy'])->name('comments.destroy');
+        });
+    });
 
 require __DIR__.'/auth.php';

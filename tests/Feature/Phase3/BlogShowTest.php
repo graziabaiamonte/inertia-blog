@@ -11,6 +11,7 @@ beforeEach(function () {
 });
 
 it('shows a published post with rendered markdown body', function () {
+    /** @var TestCase $this */
     $post = Post::factory()->published()->create([
         'body' => "# Heading\n\nSome **bold** text.",
     ]);
@@ -26,6 +27,7 @@ it('shows a published post with rendered markdown body', function () {
 });
 
 it('strips embedded html from the markdown body', function () {
+    /** @var TestCase $this */
     $post = Post::factory()->published()->create([
         'body' => 'Hello <script>alert(1)</script> world',
     ]);
@@ -37,12 +39,14 @@ it('strips embedded html from the markdown body', function () {
 });
 
 it('returns 404 for a draft post', function () {
+    /** @var TestCase $this */
     $post = Post::factory()->draft()->create();
 
     $this->get(route('blog.show', $post))->assertNotFound();
 });
 
 it('only includes approved comments', function () {
+    /** @var TestCase $this */
     $post = Post::factory()->published()->create();
     Comment::factory()->for($post)->create(['approved' => true, 'author_name' => 'Visible']);
     Comment::factory()->for($post)->create(['approved' => false, 'author_name' => 'Hidden']);

@@ -9,6 +9,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Str;
 
+/**
+ * @mixin IdeHelperTag
+ */
 #[Fillable(['name', 'slug'])]
 class Tag extends Model
 {
