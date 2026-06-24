@@ -8,11 +8,12 @@ use Database\Seeders\DatabaseSeeder;
 use Illuminate\Support\Facades\Hash;
 
 beforeEach(function () {
+    /** @var \Tests\TestCase $this */
     $this->seed(DatabaseSeeder::class);
 });
 
 it('creates the seeded admin account', function () {
-    $admin = User::where('email', 'grazia@gmail.com')->first();
+    $admin = User::query()->where('email', '=', 'grazia@gmail.com')->firstOrFail();
 
     expect($admin)->not->toBeNull()
         ->and($admin->hasRole(RoleName::Admin->value))->toBeTrue()
