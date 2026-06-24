@@ -140,8 +140,8 @@ cross-cutting tooling listed below.
 
 ### 3.1 Public controllers (`app/Http/Controllers/`)
 
-- [ ] `BlogController@index`: paginated published posts, with filters/sorts built via **`spatie/laravel-query-builder`** — `allowedFilters` (category slug, tag slug, search term), `allowedSorts` (e.g. `published_at`, `title`), scoped to `published()`.
-- [ ] `BlogController@show` (post with media URLs + approved comments), `CommentController@store` (guest comment → `approved=false`).
+- [x] `BlogController@index`: paginated published posts, with filters/sorts built via **`spatie/laravel-query-builder`** — `allowedFilters` (category slug, tag slug, search term), `allowedSorts` (e.g. `published_at`, `title`), scoped to `published()`.
+- [x] `BlogController@show` (post with media URLs + approved comments), `CommentController@store` (guest comment → `approved=false`).
 
 ### 3.2 Admin/author controllers (`app/Http/Controllers/Admin/`, auth-protected)
 

@@ -10,6 +10,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable(['post_id', 'author_name', 'author_email', 'body', 'approved'])]
+/**
+ * @method static \Illuminate\Database\Eloquent\Builder<static> approved()
+ */
 class Comment extends Model
 {
     /** @use HasFactory<CommentFactory> */
@@ -39,9 +42,10 @@ class Comment extends Model
      * Scope to only approved comments.
      *
      * @param  Builder<Comment>  $query
+     * @return Builder<Comment>
      */
-    public function scopeApproved(Builder $query): void
+    public function scopeApproved(Builder $query): Builder
     {
-        $query->where('approved', true);
+        return $query->where('approved', true);
     }
 }

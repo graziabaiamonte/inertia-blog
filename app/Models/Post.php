@@ -18,6 +18,9 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 #[Fillable(['user_id', 'category_id', 'title', 'slug', 'excerpt', 'body', 'status', 'published_at'])]
+/**
+ * @method static \Illuminate\Database\Eloquent\Builder<static> published()
+ */
 class Post extends Model implements HasMedia
 {
     /** @use HasFactory<PostFactory> */
@@ -95,10 +98,11 @@ class Post extends Model implements HasMedia
      * Scope to only published posts.
      *
      * @param  Builder<Post>  $query
+     * @return Builder<Post>
      */
-    public function scopePublished(Builder $query): void
+    public function scopePublished(Builder $query): Builder
     {
-        $query->where('status', PostStatus::Published->value)
+        return $query->where('status', PostStatus::Published->value)
             ->whereNotNull('published_at')
             ->where('published_at', '<=', now());
     }

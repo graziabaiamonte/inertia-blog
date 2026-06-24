@@ -14,6 +14,9 @@ use Spatie\Permission\Traits\HasRoles;
 
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
+/**
+ * @method static \Illuminate\Database\Eloquent\Builder<static> role(string|array $roles, ?string $guard = null)
+ */
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
