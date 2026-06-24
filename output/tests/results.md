@@ -7,20 +7,20 @@
 Full suite — `./vendor/bin/sail artisan test`
 
 ## Summary
-- Total: 131 tests, 498 assertions
-- Passed: 131
+- Total: 137 tests, 515 assertions
+- Passed: 137
 - Failed: 0
-- Time: ~7.7s
+- Time: ~7.9s
 
 ## Results
 
 ### Passed
-All 131 tests passed.
+All 137 tests passed. No failures.
 
 ### Failed
 None.
 
 ## Raw output
 ```
-{"tool":"pest","result":"passed","tests":131,"passed":131,"assertions":498,"duration_ms":7669}
+{"tool":"pest","result":"passed","tests":137,"passed":137,"assertions":515,"duration_ms":7888}
 ```

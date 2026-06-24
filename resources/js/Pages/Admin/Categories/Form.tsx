@@ -19,7 +19,7 @@ export default function AdminCategoryForm({ category }: Props & PageProps) {
         description: category?.description ?? '',
     });
 
-    function handleSubmit(e: FormEvent) {
+    function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
         if (isEditing) {
             put(route('admin.categories.update', category!.slug));

@@ -49,7 +49,7 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment): RedirectResponse
     {
-        $comment->delete();
+        $comment->delete($comment);
 
         return back()->with('success', __('Comment deleted.'));
     }
