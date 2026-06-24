@@ -115,7 +115,7 @@ Execute **Phase 1 (Inertia v3 upgrade) first**, because it changes the framework
 
 **Key reuse note:** keep the existing **route names** (`blog.index`, `blog.show`, `comments.store`) and only change their **URIs**. Because all frontend `route('blog.index'|'blog.show'|'comments.store')` calls reference names (not paths), they keep working with no frontend changes.
 
-### [ ] Task 2.1 — Point `/` to the blog index
+### [x] Task 2.1 — Point `/` to the blog index
 - **File:** `routes/web.php`.
 - **Before (lines 18–25):**
   ```php
@@ -134,13 +134,13 @@ Execute **Phase 1 (Inertia v3 upgrade) first**, because it changes the framework
   ```
 - Remove now-unused imports at the top of the file: `use Illuminate\Foundation\Application;` and `use Inertia\Inertia;` (verify `Inertia` is not used elsewhere in this file before removing it).
 
-### [ ] Task 2.2 — Remove the old `/blog` list route
+### [x] Task 2.2 — Remove the old `/blog` list route
 - **File:** `routes/web.php`. Delete this line (line 28):
   ```php
   Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
   ```
 
-### [ ] Task 2.3 — Move single-post + comment routes to root, registered LAST
+### [x] Task 2.3 — Move single-post + comment routes to root, registered LAST
 - **File:** `routes/web.php`. Remove the old lines (29–30):
   ```php
   Route::get('/blog/{post:slug}', [BlogController::class, 'show'])->name('blog.show');
@@ -157,23 +157,23 @@ Execute **Phase 1 (Inertia v3 upgrade) first**, because it changes the framework
   ```
 - **Why last:** `/{post:slug}` is a root-level wildcard. It only matches single segments (no slashes), so `/admin/...` and `/profile` are safe, but single-segment literals like `/login` and `/dashboard` must be registered **before** the wildcard to win the match. Laravel matches in registration order; `auth.php` and the admin/dashboard routes are registered above, so placing the wildcard after `require auth.php` guarantees correct precedence.
 
-### [ ] Task 2.4 — Delete the now-unused Welcome page
+### [x] Task 2.4 — Delete the now-unused Welcome page
 - Delete `resources/js/Pages/Welcome.tsx`.
 - `grep` the codebase for any remaining reference to `Welcome` (e.g. `grep -rn "Welcome" resources/js`) and remove/redirect them. A "Home" nav link, if present in `resources/js/Layouts/PublicLayout.tsx`, should use `route('blog.index')` (which now resolves to `/`).
 - **Note:** `resources/js/Pages/Blog/Index.tsx` already calls `route('blog.index')` for filters — it now points to `/` automatically, no change needed.
 
-### [ ] Task 2.5 — Verify routing
+### [x] Task 2.5 — Verify routing
 - Run `./vendor/bin/sail artisan route:list` and confirm:
   - `/` → `blog.index`, `/{post:slug}` → `blog.show`, `/{post:slug}/comments` → `comments.store`.
   - No `/blog` route remains.
   - `/login`, `/dashboard`, `/admin/*` are still listed (precedence preserved).
 - Manually load `/` (blog list with filters/search/pagination), a single post at `/{slug}`, and `/login` + `/dashboard` (must NOT be swallowed by the wildcard).
 
-### [ ] Task 2.6 — Update tests
+### [x] Task 2.6 — Update tests
 - Fix any test asserting the literal path `/blog` or the `Welcome` component. Tests using route **names** still pass.
 - Delegate to **`test-runner`**; suite must be green.
 
-### [ ] Task 2.7 — Style + commit
+### [x] Task 2.7 — Style + commit
 - Pint + Prettier; then **`auto-commit`**.
 
 ---

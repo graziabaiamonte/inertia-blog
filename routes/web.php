@@ -11,23 +11,9 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
-
-// Public blog
-Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
-Route::get('/blog/{post:slug}', [BlogController::class, 'show'])->name('blog.show');
-Route::post('/blog/{post:slug}/comments', [CommentController::class, 'store'])->name('comments.store');
+Route::get('/', [BlogController::class, 'index'])->name('blog.index');
 
 Route::get('/dashboard', DashboardController::class)->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -65,3 +51,8 @@ Route::middleware(['auth', 'verified'])
     });
 
 require __DIR__.'/auth.php';
+
+// Public single post + comments — wildcard at root, MUST be registered last
+// so literal routes (/login, /dashboard, /admin/*, /up, etc.) take precedence.
+Route::get('/{post:slug}', [BlogController::class, 'show'])->name('blog.show');
+Route::post('/{post:slug}/comments', [CommentController::class, 'store'])->name('comments.store');
