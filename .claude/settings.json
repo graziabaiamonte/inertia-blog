@@ -5,7 +5,9 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:80/)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:80/login)",
       "Bash(curl -s http://localhost:80/)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(open -a Docker)",
+      "Bash(docker info *)"
     ]
   }
 }

@@ -3,6 +3,7 @@ import Dropdown from '@/Components/Dropdown';
 import LocaleSwitcher from '@/Components/LocaleSwitcher';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
+import { useTranslations } from '@/lib/i18n';
 import { PageProps } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { PropsWithChildren, ReactNode, useState } from 'react';
@@ -11,6 +12,7 @@ export default function Authenticated({ header, children }: PropsWithChildren<{ 
     const { auth } = usePage<PageProps>().props;
     const user = auth.user!;
     const isAdmin = auth.roles.includes('admin');
+    const t = useTranslations();
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
@@ -28,10 +30,10 @@ export default function Authenticated({ header, children }: PropsWithChildren<{ 
 
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink href={route('dashboard')} active={route().current('dashboard')}>
-                                    Dashboard
+                                    {t('Dashboard')}
                                 </NavLink>
                                 <NavLink href={route('admin.posts.index')} active={route().current('admin.posts.*')}>
-                                    Posts
+                                    {t('Posts')}
                                 </NavLink>
                                 {isAdmin && (
                                     <>
@@ -39,19 +41,19 @@ export default function Authenticated({ header, children }: PropsWithChildren<{ 
                                             href={route('admin.categories.index')}
                                             active={route().current('admin.categories.*')}
                                         >
-                                            Categories
+                                            {t('Categories')}
                                         </NavLink>
                                         <NavLink
                                             href={route('admin.tags.index')}
                                             active={route().current('admin.tags.*')}
                                         >
-                                            Tags
+                                            {t('Tags')}
                                         </NavLink>
                                         <NavLink
                                             href={route('admin.comments.index')}
                                             active={route().current('admin.comments.*')}
                                         >
-                                            Comments
+                                            {t('Comments')}
                                         </NavLink>
                                     </>
                                 )}
@@ -87,9 +89,9 @@ export default function Authenticated({ header, children }: PropsWithChildren<{ 
                                     </Dropdown.Trigger>
 
                                     <Dropdown.Content>
-                                        <Dropdown.Link href={route('profile.edit')}>Profile</Dropdown.Link>
+                                        <Dropdown.Link href={route('profile.edit')}>{t('Profile')}</Dropdown.Link>
                                         <Dropdown.Link href={route('logout')} method="post" as="button">
-                                            Log Out
+                                            {t('Log Out')}
                                         </Dropdown.Link>
                                     </Dropdown.Content>
                                 </Dropdown>
@@ -125,10 +127,10 @@ export default function Authenticated({ header, children }: PropsWithChildren<{ 
                 <div className={(showingNavigationDropdown ? 'block' : 'hidden') + ' sm:hidden'}>
                     <div className="space-y-1 pb-3 pt-2">
                         <ResponsiveNavLink href={route('dashboard')} active={route().current('dashboard')}>
-                            Dashboard
+                            {t('Dashboard')}
                         </ResponsiveNavLink>
                         <ResponsiveNavLink href={route('admin.posts.index')} active={route().current('admin.posts.*')}>
-                            Posts
+                            {t('Posts')}
                         </ResponsiveNavLink>
                         {isAdmin && (
                             <>
@@ -136,19 +138,19 @@ export default function Authenticated({ header, children }: PropsWithChildren<{ 
                                     href={route('admin.categories.index')}
                                     active={route().current('admin.categories.*')}
                                 >
-                                    Categories
+                                    {t('Categories')}
                                 </ResponsiveNavLink>
                                 <ResponsiveNavLink
                                     href={route('admin.tags.index')}
                                     active={route().current('admin.tags.*')}
                                 >
-                                    Tags
+                                    {t('Tags')}
                                 </ResponsiveNavLink>
                                 <ResponsiveNavLink
                                     href={route('admin.comments.index')}
                                     active={route().current('admin.comments.*')}
                                 >
-                                    Comments
+                                    {t('Comments')}
                                 </ResponsiveNavLink>
                             </>
                         )}
@@ -165,9 +167,9 @@ export default function Authenticated({ header, children }: PropsWithChildren<{ 
                         </div>
 
                         <div className="mt-3 space-y-1">
-                            <ResponsiveNavLink href={route('profile.edit')}>Profile</ResponsiveNavLink>
+                            <ResponsiveNavLink href={route('profile.edit')}>{t('Profile')}</ResponsiveNavLink>
                             <ResponsiveNavLink method="post" href={route('logout')} as="button">
-                                Log Out
+                                {t('Log Out')}
                             </ResponsiveNavLink>
                         </div>
                     </div>
