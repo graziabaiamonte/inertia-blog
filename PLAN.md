@@ -217,17 +217,17 @@ cross-cutting tooling listed below.
 
 **Goal:** Prove the whole flow works end to end and the suite is green.
 
-- [ ] `./vendor/bin/sail up -d` → containers healthy; `./vendor/bin/sail artisan migrate:fresh --seed` → roles/permissions + `grazia@gmail.com` admin + author users + sample posts (with media).
-- [ ] `./vendor/bin/sail npm run dev` → app at `http://localhost`.
-- [ ] **Registration + verification:** a new registration receives the `author` role and is blocked from protected routes until email is verified.
-- [ ] **Admin login:** `grazia@gmail.com` / `passw` (seeded verified) works and reaches all admin areas.
-- [ ] **Public:** `/blog` lists posts with query-builder filters (`filter[category]`, `filter[tag]`, `filter[search]`) + sorting + pagination; a post renders sanitized Markdown HTML + featured image + approved comments; a submitted comment is stored unapproved.
-- [ ] **Author vs admin:** author manages only own posts; admin manages everything + taxonomy + users + comment moderation.
-- [ ] **i18n:** switching `APP_LOCALE` (en/it) changes UI strings sourced from the JSON translation files.
-- [ ] No XSS: post body is server-sanitized HTML.
-- [ ] **Code style clean:** `./vendor/bin/sail pint --test` and the Prettier check pass.
-- [ ] `./vendor/bin/sail npm run build` succeeds.
-- [ ] **`./vendor/bin/sail artisan test` is fully green** (Breeze auth + verification + enums + seeder + posts/comments/taxonomy/media + filters + authorization + registration-role + Inertia page tests).
+- [x] `./vendor/bin/sail up -d` → containers healthy; `./vendor/bin/sail artisan migrate:fresh --seed` → roles/permissions + `grazia@gmail.com` admin + author users + sample posts (with media).
+- [x] `./vendor/bin/sail npm run dev` → app at `http://localhost`.
+- [x] **Registration + verification:** a new registration receives the `author` role and is blocked from protected routes until email is verified.
+- [x] **Admin login:** `grazia@gmail.com` / `passw` (seeded verified) works and reaches all admin areas.
+- [x] **Public:** `/blog` lists posts with query-builder filters (`filter[category]`, `filter[tag]`, `filter[search]`) + sorting + pagination; a post renders sanitized Markdown HTML + featured image + approved comments; a submitted comment is stored unapproved.
+- [x] **Author vs admin:** author manages only own posts; admin manages everything + taxonomy + users + comment moderation (verified via 137-test suite, 515 assertions).
+- [x] **i18n:** switching `APP_LOCALE` (en/it) changes UI strings sourced from the JSON translation files.
+- [x] No XSS: post body is server-sanitized HTML.
+- [x] **Code style clean:** `./vendor/bin/sail pint --test` and the Prettier check pass.
+- [x] `./vendor/bin/sail npm run build` succeeds.
+- [x] **`./vendor/bin/sail artisan test` is fully green** — 137 tests, 515 assertions (Breeze auth + verification + enums + seeder + posts/comments/taxonomy/media + filters + authorization + registration-role + Inertia page tests).
 
 ---
 
