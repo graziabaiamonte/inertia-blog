@@ -3,7 +3,7 @@ import PostCard from '@/Components/PostCard';
 import PublicLayout from '@/Layouts/PublicLayout';
 import { Category, PageProps, PaginatedResponse, PostListItem, Tag } from '@/types';
 import { Head, router } from '@inertiajs/react';
-import { FormEvent, useState } from 'react';
+import { useState } from 'react';
 
 interface Props {
     posts: PaginatedResponse<PostListItem>;
@@ -32,7 +32,7 @@ export default function BlogIndex({ posts, filters, sort, categories, tags }: Pr
         router.get(route('blog.index'), merged, { preserveState: true });
     }
 
-    function handleSearch(e: FormEvent) {
+    function handleSearch(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
         applyFilter({
             'filter[search]': search || null,
