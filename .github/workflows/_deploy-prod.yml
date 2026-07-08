@@ -1,70 +1,65 @@
 name: Deploy Prod
 
 on:
-    workflow_call:
+  workflow_call:
 
 env:
-    TARGET_HOST: ${{ vars.TARGET_HOST_PROD }}
-    TARGET_PORT: ${{ vars.TARGET_PORT_PROD }}
-    TARGET_USER: ${{ vars.TARGET_USER_PROD }}
-    TARGET_PATH: ${{ vars.TARGET_PATH_PROD }}
+  TARGET_HOST: ${{ vars.TARGET_HOST_PROD }}
+  TARGET_PORT: ${{ vars.TARGET_PORT_PROD }}
+  TARGET_USER: ${{ vars.TARGET_USER_PROD }}
+  TARGET_PATH: ${{ vars.TARGET_PATH_PROD }}
 
 jobs:
-    build-and-deploy:
-        name: Build and deploy
-        runs-on: ubuntu-latest
+  sync-and-deploy:
+    name: Sync sources and deploy
+    runs-on: ubuntu-latest
 
-        steps:
-            - uses: actions/checkout@v4
+    steps:
+      - uses: actions/checkout@v4
 
-            - name: Configure PHP 8.4
-              uses: shivammathur/setup-php@master
-              with:
-                  php-version: 8.4
-                  extensions: mbstring, ctype, fileinfo, openssl, PDO, bcmath, json, tokenizer, xml
+      - name: Install SSH key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_KEY_PROD }}
 
-            - name: Composer install (production deps only)
-              run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+      - name: Trust remote host
+        run: ssh-keyscan -p "${{ env.TARGET_PORT }}" -H "${{ env.TARGET_HOST }}" >> ~/.ssh/known_hosts
 
-            - name: Compile CSS and Javascript
-              run: |
-                  npm install
-                  npm run build
+      - name: Rsync source files to droplet
+        run: |
+          rsync -az --relative --delete \
+            -e "ssh -p ${{ env.TARGET_PORT }}" \
+            --exclude='.env' \
+            --exclude='storage/' \
+            --exclude='public/storage' \
+            --exclude='public/build' \
+            --exclude='vendor/' \
+            --exclude='node_modules/' \
+            app bootstrap config database public routes resources lang artisan \
+            composer.json composer.lock package.json package-lock.json \
+            vite.config.js tsconfig.json tailwind.config.js postcss.config.js .npmrc \
+            "${{ env.TARGET_USER }}@${{ env.TARGET_HOST }}:${{ env.TARGET_PATH }}/"
 
-            - name: Install SSH key
-              uses: webfactory/ssh-agent@v0.9.0
-              with:
-                  ssh-private-key: ${{ secrets.DEPLOY_KEY_PROD }}
-
-            - name: Trust remote host
-              run: ssh-keyscan -p "${{ env.TARGET_PORT }}" -H "${{ env.TARGET_HOST }}" >> ~/.ssh/known_hosts
-
-            - name: Rsync production files to droplet
-              run: |
-                  rsync -az --relative --delete \
-                    -e "ssh -p ${{ env.TARGET_PORT }}" \
-                    --exclude='.env' \
-                    --exclude='storage/' \
-                    --exclude='public/storage' \
-                    app bootstrap config database public routes resources/views lang vendor artisan composer.json composer.lock \
-                    "${{ env.TARGET_USER }}@${{ env.TARGET_HOST }}:${{ env.TARGET_PATH }}/"
-
-            - name: Finalize release on server
-              uses: appleboy/ssh-action@master
-              with:
-                  host: ${{ env.TARGET_HOST }}
-                  username: ${{ env.TARGET_USER }}
-                  key: ${{ secrets.DEPLOY_KEY_PROD }}
-                  port: ${{ env.TARGET_PORT }}
-                  envs: TARGET_PATH
-                  script: |
-                      cd "${{ env.TARGET_PATH }}"
-                      sudo chown -R $(whoami):www-data storage bootstrap/cache
-                      sudo chmod -R 775 storage bootstrap/cache
-                      php artisan migrate --force
-                      php artisan storage:link
-                      php artisan optimize:clear
-                      php artisan config:cache
-                      php artisan route:cache
-                      php artisan view:cache
-                      sudo systemctl reload php8.4-fpm
+      - name: Install dependencies and build on server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.TARGET_HOST }}
+          username: ${{ env.TARGET_USER }}
+          key: ${{ secrets.DEPLOY_KEY_PROD }}
+          port: ${{ env.TARGET_PORT }}
+          envs: TARGET_PATH
+          command_timeout: 30m
+          script: |
+            cd "${{ env.TARGET_PATH }}"
+            COMPOSER_MEMORY_LIMIT=-1 composer install --optimize-autoloader --no-dev --no-interaction --prefer-dist
+            npm install
+            npm run build
+            sudo chown -R $(whoami):www-data storage bootstrap/cache
+            sudo chmod -R 775 storage bootstrap/cache
+            php artisan migrate --force
+            php artisan storage:link
+            php artisan optimize:clear
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            sudo systemctl reload php8.4-fpm

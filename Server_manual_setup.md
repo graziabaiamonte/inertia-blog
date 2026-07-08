@@ -419,23 +419,41 @@ cd /var/www/inertia_blog
 php artisan storage:link
 ```
 
-### 13.10 Stato finale di `/var/www/inertia_blog`
+### 13.10 Pivot — build spostata dalla CI alla VPS (composer/npm install sulla VPS)
 
-Dopo l'automazione, la cartella contiene **solo**:
+Versione iniziale del workflow (13.4): `composer install` e `npm install && npm run build` giravano sul runner GitHub Actions, e la CI spediva a `vendor/` e `public/build/` già pronti via rsync. Scelta poi cambiata: **`composer install` e `npm install`/`npm run build` girano ora sulla VPS**, non più in CI.
+
+**Perché il cambio:** per avere un flusso più vicino a quello manuale originale (punti 6 e 10) e non dipendere da artefatti (`vendor/`, `public/build/`) generati altrove e poi trasportati — a costo di riportare sul droplet il carico di `composer`/`npm`, già mitigato dallo swapfile da 1GB creato al punto 1.
+
+**Cosa cambia nel workflow (`_deploy-prod.yml`):**
+- La CI non fa più `composer install` né `npm install`/`npm run build` — fa solo `checkout` + `rsync`.
+- L'allowlist rsync ora trasporta i **sorgenti**, non i risultati di build: `composer.json`/`composer.lock`, `package.json`/`package-lock.json`, `vite.config.js`, `tsconfig.json`, `tailwind.config.js`, `postcss.config.js`, `.npmrc`, `resources/` (incluso `resources/js`, necessario a Vite per buildare), oltre a `app/ bootstrap/ config/ database/ public/ routes/ lang/ artisan`.
+- **`vendor/` e `node_modules/` non vengono più sincronizzati affatto** (né generati in CI): restano esclusi dal rsync (`--exclude='vendor/'`, `--exclude='node_modules/'`) e vengono generati **direttamente sulla VPS** da `composer install`/`npm install` nello script SSH successivo.
+- Aggiunto `--exclude='public/build'`: la build frontend viene rifatta sulla VPS da `npm run build` subito dopo il rsync, quindi non va cancellata/sincronizzata da CI (che comunque non la contiene più, essendo gitignored e mai buildata lì).
+- Script SSH post-rsync, in ordine: `composer install --optimize-autoloader --no-dev` (con `COMPOSER_MEMORY_LIMIT=-1` per lo stesso motivo del punto 6 — rischio OOM su 512MB RAM), poi `npm install && npm run build`, poi permessi/migrate/storage:link/cache come prima.
+
+**Perché `vendor/` va comunque portato/generato mentre `node_modules/` no (chiarimento concettuale):** le classi PHP in `vendor/` non vengono "compilate" in altro — PHP le esegue direttamente a runtime tramite l'autoloader di Composer, quindi devono esistere fisicamente sul server in un modo o nell'altro (build-a-monte-e-trasportate, o generate lì). `node_modules/` invece serve solo a `npm run build` per produrre `public/build/`: una volta fatta la build, `node_modules/` non serve più a runtime (il browser scarica solo `public/build/`), quindi non va mai portato sul server, indipendentemente da dove gira la build.
+
+### 13.11 Stato finale di `/var/www/inertia_blog`
+
+Dopo l'automazione (versione con build sulla VPS), la cartella contiene:
 
 ```
 app/  bootstrap/  composer.json  composer.lock  config/  database/
-lang/  public/  routes/  resources/views/  storage/  vendor/  artisan  .env
+lang/  node_modules/  package.json  package-lock.json  public/  routes/
+resources/  storage/  tailwind.config.js  tsconfig.json  vendor/  vite.config.js
+artisan  .env  postcss.config.js  .npmrc
 ```
 
-- `app/`, `bootstrap/`, `config/`, `database/`, `routes/`, `lang/`, `resources/views/`, `vendor/`, `artisan`, `composer.json`/`composer.lock` → sincronizzati automaticamente ad ogni push su `deploy-digitalocean` (rsync li sovrascrive e ripulisce con `--delete`).
-- `public/` → sincronizzato allo stesso modo, include gli asset compilati in `public/build/` (JS/CSS pronti, generati da `npm run build` in CI — **non** i sorgenti `resources/js`/`resources/css`, che non vengono mai portati sul droplet).
+- `app/`, `bootstrap/`, `config/`, `database/`, `routes/`, `lang/`, `resources/` (views + js/css sorgenti), `artisan`, `composer.json`/`composer.lock`, `package.json`/`package-lock.json` e i config di build (`vite.config.js`, `tsconfig.json`, `tailwind.config.js`, `postcss.config.js`, `.npmrc`) → sincronizzati ad ogni push su `deploy-digitalocean` (rsync li sovrascrive e ripulisce con `--delete`).
+- `vendor/` e `node_modules/` → **non sincronizzati da rsync**, generati/aggiornati sulla VPS da `composer install`/`npm install` ad ogni deploy.
+- `public/build/` → rigenerato ad ogni deploy da `npm run build` sulla VPS (non sincronizzato da CI, escluso dal `--delete` per non lasciare il sito senza asset nella finestra tra rsync e build).
 - `.env` e `storage/` → **mai toccati** dal deploy automatico, esclusi esplicitamente da rsync: restano quelli configurati/gestiti manualmente sul droplet (credenziali reali, upload utenti, log).
 
-### 13.11 Come rifare un deploy da adesso in poi
+### 13.12 Come rifare un deploy da adesso in poi
 
 Basta un push sul branch `deploy-digitalocean` dal Mac:
 ```bash
 git push origin deploy-digitalocean
 ```
-GitHub Actions builda, sincronizza e ricachea automaticamente — non serve più login SSH manuale salvo troubleshooting.
+GitHub Actions fa `checkout` + `rsync` dei sorgenti, poi via SSH esegue `composer install`, `npm install && npm run build`, `migrate`, `storage:link` e le cache — tutto sulla VPS. Non serve più login SSH manuale salvo troubleshooting.
