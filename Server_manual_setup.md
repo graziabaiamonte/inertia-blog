@@ -1,3 +1,5 @@
+<!-- processo iniziale che creava un clone di tutta la cartella,  non necessario in quanto per ottimizzare gli sapzi del droplet, ci mandiamo solo i file buildati -->
+
 # Setup manuale del server (DigitalOcean, senza Docker)
 
 Documenta il deploy manuale dell'app su un droplet Ubuntu 24.04, seguito passo dopo passo durante la sessione di setup. Utile come riferimento per rifare il deploy da zero o per capire cosa toccare in caso di problemi.
@@ -21,6 +23,7 @@ echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab   # persiste al reboo
 ```
 
 Se `dpkg` resta bloccato da un lock di un processo precedente (es. dopo un kill per OOM):
+
 ```bash
 sudo dpkg --configure -a   # se dice "frontend lock was locked by pid X"
 sudo kill -9 <pid>
@@ -88,6 +91,7 @@ composer install --optimize-autoloader --no-dev
 ```
 
 Su droplet con poca RAM, se va OOM:
+
 ```bash
 COMPOSER_MEMORY_LIMIT=-1 composer install --optimize-autoloader --no-dev
 ```
@@ -135,6 +139,7 @@ sudo chmod -R 775 storage bootstrap/cache
 ```bash
 php artisan migrate --force
 ```
+
 (Vedi bug REFERENCES/tabelle orfane al punto 2.)
 
 ## 10. Build frontend
@@ -231,10 +236,13 @@ php artisan db:seed --force
 ```
 
 **Bug incontrato #1 — permessi log:**
+
 ```
 The stream or file "/var/www/inertia_blog/storage/logs/laravel.log" could not be opened in append mode: Permission denied
 ```
+
 `storage/` era owned da `www-data` (impostato al punto 8), ma `artisan` viene lanciato come utente `grazia`, non in gruppo `www-data`. Fix: condividere ownership tra utente e gruppo web server:
+
 ```bash
 sudo chown -R grazia:www-data storage bootstrap/cache
 sudo chmod -R 775 storage bootstrap/cache
@@ -242,10 +250,12 @@ sudo chmod -R 775 storage bootstrap/cache
 
 **Bug incontrato #2 — `Call to undefined function Database\Factories\fake()`:**
 Le Factory usano l'helper `fake()`, fornito dal package `fakerphp/faker`, che nel `composer.json` di Laravel è tipicamente in `require-dev`. Il punto 6 installava le dipendenze con `--no-dev`, quindi `fakerphp/faker` non era presente in produzione → seeding falliva. Fix: reinstallare le dipendenze includendo quelle di sviluppo prima di seminare:
+
 ```bash
 composer install --optimize-autoloader   # senza --no-dev
 php artisan db:seed --force
 ```
+
 Compromesso accettato per questo progetto demo: i package `require-dev` restano installati sul server anche dopo il seeding (per tornare "puliti" si potrebbe rilanciare `composer install --no-dev`, ma non è necessario per uno scopo di tirocinio/demo).
 
 ---
@@ -281,6 +291,7 @@ Lo stesso vale lato PHP: se cambi codice in `app/`, `routes/`, ecc., basta il `g
 ### Automatizzare questo processo
 
 Questo flusso manuale (SSH + pull + build ogni volta) è il minimo indispensabile; è tipico automatizzarlo in un secondo momento con:
+
 - un **webhook GitHub** che triggera uno script sul droplet ad ogni push, oppure
 - **GitHub Actions** che si connette via SSH e fa pull+build automaticamente, oppure
 - uno strumento di deploy come **Deployer** o **Envoyer** pensato apposta per Laravel.
