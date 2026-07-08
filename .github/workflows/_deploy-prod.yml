@@ -41,7 +41,7 @@ jobs:
 
             - name: Rsync production files to droplet
               run: |
-                  rsync -az --delete \
+                  rsync -az --relative --delete \
                     -e "ssh -p ${{ env.TARGET_PORT }}" \
                     --exclude='.env' \
                     --exclude='storage/' \
