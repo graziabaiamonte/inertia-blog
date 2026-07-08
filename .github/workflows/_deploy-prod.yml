@@ -10,12 +10,26 @@ env:
   TARGET_PATH: ${{ vars.TARGET_PATH_PROD }}
 
 jobs:
-  sync-and-deploy:
-    name: Sync sources and deploy
+  build-and-deploy:
+    name: Build and deploy
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Configure PHP 8.4
+        uses: shivammathur/setup-php@master
+        with:
+          php-version: 8.4
+          extensions: mbstring, ctype, fileinfo, openssl, PDO, bcmath, json, tokenizer, xml
+
+      - name: Composer install (production deps only)
+        run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+      - name: Compile CSS and Javascript
+        run: |
+          npm install
+          npm run build
 
       - name: Install SSH key
         uses: webfactory/ssh-agent@v0.9.0
@@ -25,22 +39,17 @@ jobs:
       - name: Trust remote host
         run: ssh-keyscan -p "${{ env.TARGET_PORT }}" -H "${{ env.TARGET_HOST }}" >> ~/.ssh/known_hosts
 
-      - name: Rsync source files to droplet
+      - name: Rsync production files to droplet
         run: |
           rsync -az --relative --delete \
             -e "ssh -p ${{ env.TARGET_PORT }}" \
             --exclude='.env' \
             --exclude='storage/' \
             --exclude='public/storage' \
-            --exclude='public/build' \
-            --exclude='vendor/' \
-            --exclude='node_modules/' \
-            app bootstrap config database public routes resources lang artisan \
-            composer.json composer.lock package.json package-lock.json \
-            vite.config.js tsconfig.json tailwind.config.js postcss.config.js .npmrc \
+            app bootstrap config database public routes resources/views lang vendor artisan composer.json composer.lock \
             "${{ env.TARGET_USER }}@${{ env.TARGET_HOST }}:${{ env.TARGET_PATH }}/"
 
-      - name: Install dependencies and build on server
+      - name: Finalize release on server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ env.TARGET_HOST }}
@@ -48,12 +57,8 @@ jobs:
           key: ${{ secrets.DEPLOY_KEY_PROD }}
           port: ${{ env.TARGET_PORT }}
           envs: TARGET_PATH
-          command_timeout: 30m
           script: |
             cd "${{ env.TARGET_PATH }}"
-            COMPOSER_MEMORY_LIMIT=-1 composer install --optimize-autoloader --no-dev --no-interaction --prefer-dist
-            npm install
-            npm run build
             sudo chown -R $(whoami):www-data storage bootstrap/cache
             sudo chmod -R 775 storage bootstrap/cache
             php artisan migrate --force
