@@ -1,4 +1,4 @@
-<!-- processo iniziale che creava un clone di tutta la cartella,  non necessario in quanto per ottimizzare gli sapzi del droplet, ci mandiamo solo i file buildati -->
+<!-- processo iniziale che creava un clone di tutta la cartella,  non necessario in quanto per ottimizzare gli sapzi del droplet, ci mandiamo solo i file buildati. -->
 
 # Setup manuale del server (DigitalOcean, senza Docker)
 
