@@ -1,0 +1,146 @@
+name: Deploy Dev
+
+on:
+  push:
+    branches: [deploy-dev]
+
+env:
+  TARGET_HOST: ${{ vars.TARGET_HOST_DEV }}
+  TARGET_PORT: ${{ vars.TARGET_PORT_DEV }}
+  TARGET_USER: ${{ vars.TARGET_USER_DEV }}
+  TARGET_PATH: ${{ vars.TARGET_PATH_DEV }}
+  LARAVEL_ENV: ${{ vars.LARAVEL_ENV_DEV }}
+  ARCHIVE_NAME: ${{ github.sha }}
+
+jobs:
+  create-deployment-artifacts:
+    name: Create deployment artifacts
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure PHP 8.2
+        uses: shivammathur/setup-php@master
+        with:
+          php-version: 8.2
+          extensions: mbstring, ctype, fileinfo, openssl, PDO, bcmath, json, tokenizer, xml
+
+      - name: Composer install
+        run: |
+          composer install --no-dev --no-interaction --prefer-dist
+
+      - name:
+          Compile CSS and Javascript
+          # # https://github.com/actions/setup-node/issues/356
+          # uses: actions/setup-node@v3
+          # with:
+          #   node-version: '20.x'
+        env:
+          NODE_OPTIONS: '--openssl-legacy-provider'
+        run: |
+          npm install
+          npm run build
+
+      - name: Create deployment artifact
+        run: tar -czf "${{ env.ARCHIVE_NAME }}".tar.gz --exclude=*.git --exclude=node_modules *
+
+      - name: Store artifact for distribution
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-build
+          path: ${{ env.ARCHIVE_NAME }}.tar.gz
+
+  prepare-release-on-servers:
+    name: 'Prepare release'
+    runs-on: ubuntu-latest
+    needs: [create-deployment-artifacts]
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: app-build
+
+      - name: Upload
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ env.TARGET_HOST }}
+          username: ${{ env.TARGET_USER }}
+          key: ${{ secrets.DEPLOY_KEY_DEV }}
+          port: ${{ env.TARGET_PORT }}
+          source: ${{ env.ARCHIVE_NAME }}.tar.gz
+          target: ${{ env.TARGET_PATH }}/artifacts
+
+      - name: Extract archive and create directories
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.TARGET_HOST }}
+          username: ${{ env.TARGET_USER }}
+          key: ${{ secrets.DEPLOY_KEY_DEV }}
+          port: ${{ env.TARGET_PORT }}
+          script: |
+            mkdir -p "${{ env.TARGET_PATH }}/releases/${{ env.ARCHIVE_NAME }}"
+            tar xzf ${{ env.TARGET_PATH }}/artifacts/${{ env.ARCHIVE_NAME }}.tar.gz -C "${{ env.TARGET_PATH }}/releases/${{ env.ARCHIVE_NAME }}"
+
+            mkdir -p ${{ env.TARGET_PATH }}/storage/{app,public,framework,logs}
+            mkdir -p ${{ env.TARGET_PATH }}/storage/framework/{cache,sessions,testing,views}
+
+            cp -rpf ${{ env.TARGET_PATH }}/releases/${{ env.ARCHIVE_NAME }}/storage/app/* ${{ env.TARGET_PATH }}/storage/app/
+
+            rm -rf ${{ env.TARGET_PATH }}/releases/${{ env.ARCHIVE_NAME }}/storage
+            sudo -u root chmod -R 0777 ${{ env.TARGET_PATH }}/storage
+
+  activate-release:
+    name: 'Activate release'
+    runs-on: ubuntu-latest
+    needs: [create-deployment-artifacts, prepare-release-on-servers]
+    steps:
+      - name: Activate release
+        uses: appleboy/ssh-action@master
+        env:
+          RELEASE_PATH: ${{ env.TARGET_PATH }}/releases/${{ env.ARCHIVE_NAME }}
+          ACTIVE_RELEASE_PATH: ${{ env.TARGET_PATH }}/laravel
+          STORAGE_PATH: ${{ env.TARGET_PATH }}/storage
+          BASE_PATH: ${{ env.TARGET_PATH }}
+          LARAVEL_ENV: ${{ env.LARAVEL_ENV }}
+          LARAVEL_ENV_SECRET: ${{ secrets.LARAVEL_ENV_SECRET_DEV }}
+        with:
+          host: ${{ env.TARGET_HOST }}
+          username: ${{ env.TARGET_USER }}
+          key: ${{ secrets.DEPLOY_KEY_DEV }}
+          port: ${{ env.TARGET_PORT }}
+          envs: RELEASE_PATH,ACTIVE_RELEASE_PATH,STORAGE_PATH,BASE_PATH,LARAVEL_ENV,LARAVEL_ENV_SECRET
+
+          script: |
+            cd $ACTIVE_RELEASE_PATH
+            php artisan down
+            cd ${BASE_PATH}
+            printf "%s" "$LARAVEL_ENV" > "${BASE_PATH}/.env"
+            printf "%s" "$LARAVEL_ENV_SECRET" >> "${BASE_PATH}/.env"
+            ln -s -f ${BASE_PATH}/.env $RELEASE_PATH
+            ln -s -f $STORAGE_PATH $RELEASE_PATH
+            ln -s -n -f $RELEASE_PATH $ACTIVE_RELEASE_PATH
+            cd $ACTIVE_RELEASE_PATH
+            php artisan storage:link
+            php artisan migrate --force
+            php artisan cache:clear
+            php artisan view:cache
+            php artisan config:cache
+            php artisan route:cache
+            php artisan up
+
+  clean-up:
+    name: 'Clean up'
+    runs-on: ubuntu-latest
+    needs: [create-deployment-artifacts, prepare-release-on-servers, activate-release]
+    steps:
+      - name: Run after hooks
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.TARGET_HOST }}
+          username: ${{ env.TARGET_USER }}
+          key: ${{ secrets.DEPLOY_KEY_DEV }}
+          port: ${{ env.TARGET_PORT }}
+
+          script: |
+            cd "${{ env.TARGET_PATH }}/releases" && ls -t -1 | tail -n +4 | xargs rm -rf
+            cd "${{ env.TARGET_PATH }}/artifacts" && ls -t -1 | tail -n +4 | xargs rm -rf

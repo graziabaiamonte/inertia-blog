@@ -419,41 +419,45 @@ cd /var/www/inertia_blog
 php artisan storage:link
 ```
 
-### 13.10 Pivot — build spostata dalla CI alla VPS (composer/npm install sulla VPS)
+### 13.10 Stato finale di `/var/www/inertia_blog`
 
-Versione iniziale del workflow (13.4): `composer install` e `npm install && npm run build` giravano sul runner GitHub Actions, e la CI spediva a `vendor/` e `public/build/` già pronti via rsync. Scelta poi cambiata: **`composer install` e `npm install`/`npm run build` girano ora sulla VPS**, non più in CI.
-
-**Perché il cambio:** per avere un flusso più vicino a quello manuale originale (punti 6 e 10) e non dipendere da artefatti (`vendor/`, `public/build/`) generati altrove e poi trasportati — a costo di riportare sul droplet il carico di `composer`/`npm`, già mitigato dallo swapfile da 1GB creato al punto 1.
-
-**Cosa cambia nel workflow (`_deploy-prod.yml`):**
-- La CI non fa più `composer install` né `npm install`/`npm run build` — fa solo `checkout` + `rsync`.
-- L'allowlist rsync ora trasporta i **sorgenti**, non i risultati di build: `composer.json`/`composer.lock`, `package.json`/`package-lock.json`, `vite.config.js`, `tsconfig.json`, `tailwind.config.js`, `postcss.config.js`, `.npmrc`, `resources/` (incluso `resources/js`, necessario a Vite per buildare), oltre a `app/ bootstrap/ config/ database/ public/ routes/ lang/ artisan`.
-- **`vendor/` e `node_modules/` non vengono più sincronizzati affatto** (né generati in CI): restano esclusi dal rsync (`--exclude='vendor/'`, `--exclude='node_modules/'`) e vengono generati **direttamente sulla VPS** da `composer install`/`npm install` nello script SSH successivo.
-- Aggiunto `--exclude='public/build'`: la build frontend viene rifatta sulla VPS da `npm run build` subito dopo il rsync, quindi non va cancellata/sincronizzata da CI (che comunque non la contiene più, essendo gitignored e mai buildata lì).
-- Script SSH post-rsync, in ordine: `composer install --optimize-autoloader --no-dev` (con `COMPOSER_MEMORY_LIMIT=-1` per lo stesso motivo del punto 6 — rischio OOM su 512MB RAM), poi `npm install && npm run build`, poi permessi/migrate/storage:link/cache come prima.
-
-**Perché `vendor/` va comunque portato/generato mentre `node_modules/` no (chiarimento concettuale):** le classi PHP in `vendor/` non vengono "compilate" in altro — PHP le esegue direttamente a runtime tramite l'autoloader di Composer, quindi devono esistere fisicamente sul server in un modo o nell'altro (build-a-monte-e-trasportate, o generate lì). `node_modules/` invece serve solo a `npm run build` per produrre `public/build/`: una volta fatta la build, `node_modules/` non serve più a runtime (il browser scarica solo `public/build/`), quindi non va mai portato sul server, indipendentemente da dove gira la build.
-
-### 13.11 Stato finale di `/var/www/inertia_blog`
-
-Dopo l'automazione (versione con build sulla VPS), la cartella contiene:
+Dopo l'automazione, la cartella contiene **solo**:
 
 ```
 app/  bootstrap/  composer.json  composer.lock  config/  database/
-lang/  node_modules/  package.json  package-lock.json  public/  routes/
-resources/  storage/  tailwind.config.js  tsconfig.json  vendor/  vite.config.js
-artisan  .env  postcss.config.js  .npmrc
+lang/  public/  routes/  resources/views/  storage/  vendor/  artisan  .env
 ```
 
-- `app/`, `bootstrap/`, `config/`, `database/`, `routes/`, `lang/`, `resources/` (views + js/css sorgenti), `artisan`, `composer.json`/`composer.lock`, `package.json`/`package-lock.json` e i config di build (`vite.config.js`, `tsconfig.json`, `tailwind.config.js`, `postcss.config.js`, `.npmrc`) → sincronizzati ad ogni push su `deploy-digitalocean` (rsync li sovrascrive e ripulisce con `--delete`).
-- `vendor/` e `node_modules/` → **non sincronizzati da rsync**, generati/aggiornati sulla VPS da `composer install`/`npm install` ad ogni deploy.
-- `public/build/` → rigenerato ad ogni deploy da `npm run build` sulla VPS (non sincronizzato da CI, escluso dal `--delete` per non lasciare il sito senza asset nella finestra tra rsync e build).
+- `app/`, `bootstrap/`, `config/`, `database/`, `routes/`, `lang/`, `resources/views/`, `vendor/`, `artisan`, `composer.json`/`composer.lock` → sincronizzati automaticamente ad ogni push su `deploy-digitalocean` (rsync li sovrascrive e ripulisce con `--delete`).
+- `public/` → sincronizzato allo stesso modo, include gli asset compilati in `public/build/` (JS/CSS pronti, generati da `npm run build` in CI — **non** i sorgenti `resources/js`/`resources/css`, che non vengono mai portati sul droplet).
 - `.env` e `storage/` → **mai toccati** dal deploy automatico, esclusi esplicitamente da rsync: restano quelli configurati/gestiti manualmente sul droplet (credenziali reali, upload utenti, log).
+- `node_modules/` → **non esiste mai** sul droplet: `npm install`/`npm run build` girano solo sul runner GitHub Actions (macchina temporanea, distrutta a fine job), e `node_modules/` non fa parte dell'allowlist rsync — serve solo a produrre `public/build/`, non a runtime.
 
-### 13.12 Come rifare un deploy da adesso in poi
+### 13.11 Come rifare un deploy da adesso in poi
 
 Basta un push sul branch `deploy-digitalocean` dal Mac:
 ```bash
 git push origin deploy-digitalocean
 ```
-GitHub Actions fa `checkout` + `rsync` dei sorgenti, poi via SSH esegue `composer install`, `npm install && npm run build`, `migrate`, `storage:link` e le cache — tutto sulla VPS. Non serve più login SSH manuale salvo troubleshooting.
+GitHub Actions builda (`composer install --no-dev`, `npm install && npm run build`), sincronizza via rsync e ricachea automaticamente — non serve più login SSH manuale salvo troubleshooting.
+
+> **Nota:** è stato brevemente valutato (e poi scartato) uno schema alternativo in cui `composer install`/`npm install` giravano direttamente sulla VPS invece che in CI, per restare più vicini al flusso manuale dei punti 6/10. Scartato perché avrebbe portato `node_modules/` (mai necessario a runtime) a comparire stabilmente sul droplet — si è preferito mantenere la build in CI, come descritto sopra.
+
+### 13.12 Cambio meccanismo di trasferimento — da `rsync` a `tar` + `scp` + estrazione, `composer install` spostato sulla VPS
+
+Ispirandosi al workflow reale usato in azienda (`.github/workflows/deploy-dev.yml`, che usa uno schema a "release" con cartelle `releases/<sha>/` + symlink — quella parte **non** è stata replicata, si resta sullo schema in-place già in uso), il meccanismo di trasferimento dei file è cambiato da `rsync` a `tar`+`scp`+estrazione via SSH. Contestualmente, `composer install` si sposta dalla CI alla VPS (`npm install && npm run build` **restano in CI**, il tar include già `public/build/` pronto).
+
+**Nuovo flusso in `_deploy-prod.yml`:**
+1. CI: `npm install && npm run build`.
+2. CI: crea un archivio `tar.gz` (nome = SHA del commit) con la stessa allowlist di file di produzione usata finora, **esclusa `vendor/`**: `app bootstrap config database public routes resources/views lang artisan composer.json composer.lock`.
+3. CI: upload dell'archivio in `/tmp` sul droplet via `appleboy/scp-action`.
+4. Via SSH sul droplet:
+   - rimozione esplicita delle vecchie directory runtime (`app bootstrap config database routes resources/views lang public/build`) prima di estrarre — **necessario** perché, a differenza di `rsync --delete`, l'estrazione di un tar non cancella da sola i file non più presenti nel nuovo archivio;
+   - estrazione dell'archivio direttamente in `/var/www/inertia_blog`;
+   - cancellazione dell'archivio da `/tmp` subito dopo l'estrazione;
+   - `composer install --optimize-autoloader --no-dev` (con `COMPOSER_MEMORY_LIMIT=-1`, stesso motivo del punto 6 — rischio OOM su 512MB RAM) — **nuovo**, prima girava in CI;
+   - permessi, `migrate --force`, `storage:link`, `optimize:clear`, cache, reload PHP-FPM — invariati.
+
+**Perché `vendor/` non è più sincronizzato ma nemmeno generato in CI:** ora viene creato/aggiornato direttamente sulla VPS da `composer install`, eseguito dopo l'estrazione del tar. Il tar non lo contiene affatto (né come sorgente né come vincolo di pulizia — non essendo nell'allowlist, `rm -rf` prima dell'estrazione non lo tocca).
+
+**Nota sulla pulizia mancante di `tar` rispetto a `rsync --delete`:** con `rsync --delete` i file rimossi dal codice sparivano automaticamente dal droplet ad ogni deploy. Con `tar`+estrazione questo non succede in automatico — per questo lo script SSH cancella esplicitamente le directory dell'allowlist prima di ri-estrarre, per evitare che vecchi file PHP/Blade rimossi dal repository restino orfani sul server.
