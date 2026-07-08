@@ -1,0 +1,11 @@
+name: Trigger Prod Deployment
+
+on:
+    push:
+        branches:
+            - deploy-digitalocean
+
+jobs:
+    run-prod-deploy:
+        uses: ./.github/workflows/_deploy-prod.yml
+        secrets: inherit
