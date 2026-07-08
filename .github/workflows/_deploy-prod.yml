@@ -45,6 +45,7 @@ jobs:
                     -e "ssh -p ${{ env.TARGET_PORT }}" \
                     --exclude='.env' \
                     --exclude='storage/' \
+                    --exclude='public/storage' \
                     app bootstrap config database public routes resources/views lang vendor artisan composer.json composer.lock \
                     "${{ env.TARGET_USER }}@${{ env.TARGET_HOST }}:${{ env.TARGET_PATH }}/"
 
@@ -61,6 +62,7 @@ jobs:
                       sudo chown -R $(whoami):www-data storage bootstrap/cache
                       sudo chmod -R 775 storage bootstrap/cache
                       php artisan migrate --force
+                      php artisan storage:link
                       php artisan optimize:clear
                       php artisan config:cache
                       php artisan route:cache

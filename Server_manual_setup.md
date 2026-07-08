@@ -297,3 +297,145 @@ Questo flusso manuale (SSH + pull + build ogni volta) è il minimo indispensabil
 - uno strumento di deploy come **Deployer** o **Envoyer** pensato apposta per Laravel.
 
 Per ora, dato lo scopo demo/tirocinio, il flusso manuale documentato sopra è sufficiente.
+
+---
+
+## 13. Automazione del deploy con GitHub Actions (da clone manuale a CI/CD)
+
+Il flusso manuale ai punti 1–12 resta il **setup iniziale** del droplet (fatto una sola volta: swap, MySQL, PHP, Nginx, primo `git clone`). Da un certo punto in poi, però, il deploy di ogni nuova modifica non è più stato fatto a mano (SSH + `git pull` + build), ma automatizzato con **GitHub Actions**.
+
+### 13.1 Situazione di partenza (cosa c'era prima)
+
+`/var/www/inertia_blog` era un **clone Git completo** del repository: oltre ai file necessari a runtime (`app/`, `config/`, `public/`, `vendor/`, ecc.) conteneva anche tutto ciò che serve solo in sviluppo — `.git/`, `node_modules/`, `tests/`, `resources/js` (sorgenti TS/TSX non compilati), file di progetto (`PLAN.md`, `CLAUDE.md`, `ImprovementPlan.md`, `ToDo.md`, `README.md`), tooling (`.vscode/`, `.ide-stubs/`, `phpunit.xml`, `pint.json`, `tailwind.config.js`, `vite.config.js`, `package.json`, `compose.yaml`), ecc. Ogni aggiornamento richiedeva login SSH manuale e la sequenza `git pull` + `composer install` + `npm run build` + `migrate` descritta sopra.
+
+### 13.2 Obiettivo del cambiamento
+
+Automatizzare il deploy **senza** portare sul droplet l'intero repository, ma solo i file realmente necessari all'esecuzione dell'app in produzione — e senza buildare su una macchina con soli 512MB RAM (già andata in OOM su `composer`/`npm`, vedi punto 1).
+
+### 13.3 Architettura scelta
+
+- **Build sempre in CI** (runner GitHub Actions, RAM abbondante), mai sul droplet.
+- **Trasferimento selettivo** via `rsync` (non più `git pull` sul server): solo le cartelle/file di runtime.
+- Scrittura **in-place** dentro `/var/www/inertia_blog` (la stessa cartella di sempre), non uno schema a release/symlink separato — per restare coerenti con Nginx già puntato lì (`root /var/www/inertia_blog/public`).
+- `.env` e `storage/` **mai toccati** dal deploy automatico: restano quelli già presenti e gestiti a mano sul droplet.
+
+### 13.4 File del workflow
+
+- `.github/workflows/_deploy-prod.yml` — reusable workflow (`workflow_call`), job unico `build-and-deploy`:
+  1. `actions/checkout@v4`
+  2. `composer install --no-dev --optimize-autoloader` (PHP 8.4, come sul droplet)
+  3. `npm install && npm run build` → genera `public/build/` (manifest, JS, CSS)
+  4. `rsync -az --relative --delete` verso il droplet, con allowlist esplicita di path:
+     ```
+     app bootstrap config database public routes resources/views lang vendor artisan composer.json composer.lock
+     ```
+     escludendo `--exclude='.env'` e `--exclude='storage/'`.
+  5. Via SSH sul droplet: fix permessi `storage`/`bootstrap/cache`, `php artisan migrate --force`, `optimize:clear`, poi `config:cache` + `route:cache` + `view:cache`, `systemctl reload php8.4-fpm`.
+- `.github/workflows/_deploy-trigger.yml` — trigger: push sul branch `deploy-digitalocean` chiama `_deploy-prod.yml`.
+
+### 13.5 Configurazione richiesta su GitHub (una tantum)
+
+Repository → Settings → Secrets and variables → Actions:
+
+- **Variables**: `TARGET_HOST_PROD` (`164.92.182.114`), `TARGET_PORT_PROD` (`22`), `TARGET_USER_PROD` (`grazia`), `TARGET_PATH_PROD` (`/var/www/inertia_blog`).
+- **Secrets**: `DEPLOY_KEY_PROD` (chiave privata SSH dedicata, es. `~/.ssh/id_ed25519`; la pubblica corrispondente va in `~/.ssh/authorized_keys` sul droplet per l'utente `grazia`).
+
+Sul droplet, l'utente usato dal deploy deve poter eseguire senza password i comandi che richiedono `sudo` (chown storage, reload php-fpm):
+```bash
+sudo visudo -f /etc/sudoers.d/github-deploy
+```
+con dentro una riga tipo:
+```
+grazia ALL=(ALL) NOPASSWD: /bin/chown, /bin/chmod, /usr/bin/systemctl reload php8.4-fpm
+```
+
+### 13.6 Bug incontrato — rsync appiattisce `resources/views` in una cartella `views/` top-level
+
+Prima versione del comando rsync passava più path come argomenti separati senza `--relative`:
+```bash
+rsync -az --delete app bootstrap ... resources/views lang ... user@host:/var/www/inertia_blog/
+```
+Comportamento di `rsync` con path multipli: ogni sorgente viene copiata sul target usando solo il proprio **nome base**, non l'intero percorso relativo. Risultato: invece di popolare `/var/www/inertia_blog/resources/views/`, ha creato una cartella sbagliata `/var/www/inertia_blog/views/` (nome base di `resources/views`), lasciando le Blade view nel posto sbagliato.
+
+**Fix:** aggiunta l'opzione `--relative` (alias `-R`) al comando rsync, che preserva il percorso relativo completo di ogni sorgente rispetto alla working directory del checkout:
+```bash
+rsync -az --relative --delete ...
+```
+Con questa opzione `resources/views` finisce correttamente sotto `/var/www/inertia_blog/resources/views/`.
+
+Fix applicato, poi rimossa manualmente sul droplet la cartella `views/` sbagliata creata dal run precedente:
+```bash
+rm -rf /var/www/inertia_blog/views
+```
+
+### 13.7 Bug incontrato — `Class "translator" does not exist` / `Class "...BrowserLocaleServiceProvider" not found` dopo il deploy
+
+Sintomo: dopo il primo deploy automatico riuscito, il sito rispondeva con **500 Internal Server Error**. Nel log (`storage/logs/laravel.log`) compariva `ReflectionException: Class "translator" does not exist`, e in un secondo momento (dopo `php artisan optimize:clear` manuale) `Class "CodeZero\BrowserLocale\Laravel\BrowserLocaleServiceProvider" not found`.
+
+**Causa:** il comando rsync escludeva esplicitamente `bootstrap/cache/*.php` dal trasferimento, nell'idea (sbagliata) che fossero cache "runtime" come `storage/` da preservare tra un deploy e l'altro. In realtà `bootstrap/cache/packages.php` e `bootstrap/cache/services.php` sono **artefatti generati da Composer** (package auto-discovery, eseguito durante `composer install`) che elencano i service provider da caricare in base ai pacchetti effettivamente installati. Escludendoli, il droplet continuava a usare la versione generata al tempo del *primo* clone manuale (quando erano installati anche pacchetti `require-dev` non più presenti nel `vendor/` buildato con `--no-dev` dalla CI) — disallineata col nuovo `vendor/`, causando provider mancanti o non trovati.
+
+**Fix:**
+1. Rimosso `--exclude='bootstrap/cache/*.php'` dal comando rsync — ora tutta `bootstrap/cache/` viene sincronizzata ad ogni deploy, sempre coerente col `vendor/` appena installato dalla CI.
+2. Aggiunto `php artisan optimize:clear` nello script SSH, **prima** di rigenerare `config:cache`/`route:cache`/`view:cache`, per eliminare ogni cache stantia residua ad ogni deploy.
+3. Fix una tantum applicato a mano sul droplet per sbloccare il sito subito (senza aspettare un nuovo deploy):
+   ```bash
+   rm -f bootstrap/cache/packages.php bootstrap/cache/services.php
+   php artisan package:discover --ansi
+   php artisan config:cache
+   php artisan route:cache
+   php artisan view:cache
+   sudo systemctl reload php8.4-fpm
+   ```
+
+### 13.8 Pulizia una tantum del droplet dai file di sviluppo residui
+
+Dato che `/var/www/inertia_blog` era nato come clone Git completo (punto 13.1), è stato ripulito manualmente da tutto ciò che il nuovo workflow rsync non gestisce e che non serve a runtime:
+
+```bash
+cd /var/www/inertia_blog
+rm -rf .git .github .claude .ide-stubs .vscode node_modules tests output views \
+       .editorconfig .gitattributes .gitignore .npmrc .prettierignore .prettierrc \
+       AGENTS.md CLAUDE.md ImprovementPlan.md PLAN.md README.md ToDo.md \
+       compose.yaml package.json package-lock.json phpunit.xml pint.json \
+       postcss.config.js tailwind.config.js tsconfig.json vite.config.js
+rm -rf resources/js resources/css   # sorgenti frontend grezzi, già compilati in public/build
+```
+
+Da quel momento in poi il workflow **non ricrea** questi file: vivono solo nel checkout temporaneo del runner GitHub Actions durante la build, mai sul droplet.
+
+### 13.9 Bug incontrato — immagini dei post 404 dopo il deploy (symlink `public/storage` cancellato)
+
+Sintomo: sito online, ma tutte le immagini caricate tramite `spatie/laravel-medialibrary` (featured image dei post, immagini inline) davano **404** in console (`Failed to load resource: 404`), pur essendo presenti fisicamente in `storage/app/public/...` sul droplet.
+
+**Causa:** `public/storage` non è un file versionato in git — è un **symlink** creato a runtime da `php artisan storage:link` (fatto manualmente al punto 8 del setup iniziale), che punta a `storage/app/public`. Il comando rsync sincronizza `public/` con `--delete` rispetto al checkout CI, che ovviamente **non contiene** questo symlink (non fa parte del repository). Ad ogni deploy, rsync lo cancellava per "farlo combaciare" con la sorgente CI — rompendo tutti i link alle immagini pur senza cancellare i file reali in `storage/`.
+
+**Fix in `_deploy-prod.yml`:**
+1. Aggiunto `--exclude='public/storage'` al comando rsync, per non farlo mai toccare/cancellare dal `--delete`.
+2. Aggiunto `php artisan storage:link` nello script SSH post-deploy (prima di `optimize:clear`), idempotente: se il symlink esiste già non fa nulla di distruttivo, se manca (es. primo deploy su droplet pulito) lo ricrea.
+
+Fix una tantum per sbloccare subito il sito (senza aspettare un nuovo deploy):
+```bash
+cd /var/www/inertia_blog
+php artisan storage:link
+```
+
+### 13.10 Stato finale di `/var/www/inertia_blog`
+
+Dopo l'automazione, la cartella contiene **solo**:
+
+```
+app/  bootstrap/  composer.json  composer.lock  config/  database/
+lang/  public/  routes/  resources/views/  storage/  vendor/  artisan  .env
+```
+
+- `app/`, `bootstrap/`, `config/`, `database/`, `routes/`, `lang/`, `resources/views/`, `vendor/`, `artisan`, `composer.json`/`composer.lock` → sincronizzati automaticamente ad ogni push su `deploy-digitalocean` (rsync li sovrascrive e ripulisce con `--delete`).
+- `public/` → sincronizzato allo stesso modo, include gli asset compilati in `public/build/` (JS/CSS pronti, generati da `npm run build` in CI — **non** i sorgenti `resources/js`/`resources/css`, che non vengono mai portati sul droplet).
+- `.env` e `storage/` → **mai toccati** dal deploy automatico, esclusi esplicitamente da rsync: restano quelli configurati/gestiti manualmente sul droplet (credenziali reali, upload utenti, log).
+
+### 13.11 Come rifare un deploy da adesso in poi
+
+Basta un push sul branch `deploy-digitalocean` dal Mac:
+```bash
+git push origin deploy-digitalocean
+```
+GitHub Actions builda, sincronizza e ricachea automaticamente — non serve più login SSH manuale salvo troubleshooting.
